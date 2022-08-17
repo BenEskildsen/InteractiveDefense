@@ -1,0 +1,50 @@
+
+- - - - - - - FIX - - - - - - - -
+
+
+- - - - - - GAME MECHANICS - - - - - -
+  - add dirt to placement that moves to location
+  - make turret more satisfying to shoot
+    - faster fire rate
+    - recoil
+    - burst fire, crosshair goes away?
+  - separate palette for upgrades
+    - fire rate
+    - bullet damage
+    - turret turn rate
+    - missile radius
+    - fire multiple projectiles in an arc
+
+
+- - - - - - - PLAYTESTING - - - - - - - -
+
+
+- - - - - - REFACTOR - - - - - - - -
+  - switch to fullscreen canvas component
+  - use ui + utils packages
+  - properties
+    - add to registry, all named the same way
+    - added to memos automatically
+  - add levelEditor UI stuff to entities themselves
+  - level loading should exist outside of Lobby as a thunk
+  - clean up pheromone worker
+
+
+- - - - - - POLISH - - - - - -
+  - increase score for number of kills per tick
+  - UI
+    - nicer cards for buildings
+    - get healthbar to render for turret and base and dirt and stone
+      - maxHP
+      - render healthbars for non-agents
+      - render location
+  - Remove WASD and scroll (add hotkeys for pause, etc)
+  - Remove main menu
+  - Reset should pass through lobby again
+  - favicon
+  - rune integration + toggle for it
+
+
+- - - - - - STRETCH - - - - - -
+  - have dead beetle bodies that slowly fade
+  - detect sideways screen and rotate grid rendering
