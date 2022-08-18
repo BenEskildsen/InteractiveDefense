@@ -234,6 +234,7 @@ const rootReducer = (state: State, action: Action): State => {
     case 'SET_SENT_WARNING':
     case 'SET_IN_WAVE':
     case 'SUBTRACT_BASE_RESOURCES':
+    case 'ENQUEUE_TARGET':
     case 'ENQUEUE_ENTITY_ACTION': {
       if (!state.game) return state;
       return {

@@ -821,9 +821,9 @@ var config = {
   NOT_ANIMATED: true,
   TILED: true,
   COLLECTABLE: true,
-  // cost: 1,
+  cost: 1,
   hp: 10,
-  name: 'dirt',
+  // name: 'Dirt',
 
   isExplosionImmune: true
 };
@@ -1096,7 +1096,7 @@ var config = {
     duration: 1,
     spriteOrder: [0]
   },
-  cost: 10
+  cost: 20
 };
 
 var make = function make(game, position, playerID, warhead, theta, velocity, targetID) {
@@ -1119,6 +1119,7 @@ var make = function make(game, position, playerID, warhead, theta, velocity, tar
     PIERCING: false,
 
     targetID: targetID,
+    targetPos: null,
 
     prevPositions: [add(position, { x: config.width / 2, y: config.height / 2 })]
   });
@@ -1950,12 +1951,51 @@ var gameReducer = function gameReducer(game, action) {
         game[property] = value;
         return game;
       }
+    case 'ENQUEUE_TARGET':
+      {
+        var position = action.position,
+            entity = action.entity,
+            projectileType = action.projectileType;
+
+        if (!entity.targetQueue) {
+          entity.targetQueue = [];
+        }
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = entity.targetQueue[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var target = _step.value;
+
+            if (equals(target.position, position)) {
+              return game; // don't queue same position twice
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        entity.targetQueue.push({ position: position, projectileType: projectileType });
+        return game;
+      }
     case 'ENQUEUE_ENTITY_ACTION':
       {
         var entityAction = action.entityAction,
-            entity = action.entity;
+            _entity = action.entity;
 
-        queueAction(game, entity, entityAction);
+        queueAction(game, _entity, entityAction);
         return game;
       }
     case 'SET_VIEW_POS':
@@ -2032,19 +2072,19 @@ var gameReducer = function gameReducer(game, action) {
       }
     case 'CREATE_ENTITY':
       {
-        var _entity = action.entity,
-            position = action.position;
+        var _entity2 = action.entity,
+            _position = action.position;
 
-        if (position != null) {
-          game.prevInteractPosition = position;
+        if (_position != null) {
+          game.prevInteractPosition = _position;
         }
-        return addEntity(game, _entity);
+        return addEntity(game, _entity2);
       }
     case 'DELETE_ENTITY':
       {
-        var _entity2 = action.entity;
+        var _entity3 = action.entity;
 
-        removeEntity(game, _entity2);
+        removeEntity(game, _entity3);
         return game;
       }
     case 'CREATE_ENTITIES':
@@ -2106,33 +2146,33 @@ var gameReducer = function gameReducer(game, action) {
               }).filter(function (e) {
                 return equals(e.position, add(position, { x: x, y: y }));
               });
-              var _iteratorNormalCompletion = true;
-              var _didIteratorError = false;
-              var _iteratorError = undefined;
+              var _iteratorNormalCompletion2 = true;
+              var _didIteratorError2 = false;
+              var _iteratorError2 = undefined;
 
               try {
-                for (var _iterator = entities[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                  var copyEntity = _step.value;
+                for (var _iterator2 = entities[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                  var copyEntity = _step2.value;
 
                   var pos = add(pastePos, { x: x, y: y });
                   var key = encodePosition(pos);
                   game.viewImage.stalePositions[key] = pos;
 
-                  var _entity3 = _extends({}, copyEntity, { position: pos });
-                  if (!entityInsideGrid(game, _entity3)) continue;
-                  addEntity(game, _entity3);
+                  var _entity4 = _extends({}, copyEntity, { position: pos });
+                  if (!entityInsideGrid(game, _entity4)) continue;
+                  addEntity(game, _entity4);
                 }
               } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
               } finally {
                 try {
-                  if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
+                  if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
                   }
                 } finally {
-                  if (_didIteratorError) {
-                    throw _iteratorError;
+                  if (_didIteratorError2) {
+                    throw _iteratorError2;
                   }
                 }
               }
@@ -2163,13 +2203,13 @@ var gameReducer = function gameReducer(game, action) {
             _rect = action.rect;
 
         if (_rect != null) {
-          var _position = _rect.position,
+          var _position2 = _rect.position,
               width = _rect.width,
               height = _rect.height;
 
           for (var x = 0; x < width; x++) {
             for (var y = 0; y < height; y++) {
-              var pos = add(_position, { x: x, y: y });
+              var pos = add(_position2, { x: x, y: y });
               fillPheromone(game, pos, _pheromoneType, playerID, quantity);
             }
           }
@@ -2185,22 +2225,22 @@ var gameReducer = function gameReducer(game, action) {
 
         var allWaterQuantity = 0;
         var shouldUpdateWaterQuantity = false;
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
 
         try {
-          for (var _iterator2 = pheromones[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var positionHash = _step2.value;
+          for (var _iterator3 = pheromones[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var positionHash = _step3.value;
 
             for (var encodedPosition in positionHash) {
-              var _position2 = decodePosition(encodedPosition);
+              var _position3 = decodePosition(encodedPosition);
               var _positionHash$encoded = positionHash[encodedPosition],
                   _pheromoneType2 = _positionHash$encoded.pheromoneType,
                   _quantity = _positionHash$encoded.quantity,
                   _playerID = _positionHash$encoded.playerID;
 
-              setPheromone(game, _position2, _pheromoneType2, _quantity, _playerID, true /*no worker*/);
+              setPheromone(game, _position3, _pheromoneType2, _quantity, _playerID, true /*no worker*/);
               if (_pheromoneType2 == 'WATER' || _pheromoneType2 == 'STEAM') {
                 shouldUpdateWaterQuantity = true;
                 allWaterQuantity++;
@@ -2208,16 +2248,16 @@ var gameReducer = function gameReducer(game, action) {
             }
           }
         } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-              _iterator2.return();
+            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+              _iterator3.return();
             }
           } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
+            if (_didIteratorError3) {
+              throw _iteratorError3;
             }
           }
         }
@@ -2238,39 +2278,39 @@ var gameReducer = function gameReducer(game, action) {
     case 'DELETE_ENTITIES':
       {
         var _rect2 = action.rect;
-        var _position3 = _rect2.position,
+        var _position4 = _rect2.position,
             _width = _rect2.width,
             _height = _rect2.height;
 
         for (var _x = 0; _x < _width; _x++) {
           for (var _y = 0; _y < _height; _y++) {
-            var _pos = add(_position3, { x: _x, y: _y });
+            var _pos = add(_position4, { x: _x, y: _y });
             var ids = lookupInGrid(game.grid, _pos);
-            var _iteratorNormalCompletion3 = true;
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
 
             try {
-              for (var _iterator3 = ids[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                var id = _step3.value;
+              for (var _iterator4 = ids[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                var id = _step4.value;
 
-                var _entity4 = game.entities[id];
-                removeEntity(game, _entity4);
-                if (_entity4.NOT_ANIMATED) {
+                var _entity5 = game.entities[id];
+                removeEntity(game, _entity5);
+                if (_entity5.NOT_ANIMATED) {
                   game.viewImage.allStale = true;
                 }
               }
             } catch (err) {
-              _didIteratorError3 = true;
-              _iteratorError3 = err;
+              _didIteratorError4 = true;
+              _iteratorError4 = err;
             } finally {
               try {
-                if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                  _iterator3.return();
+                if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                  _iterator4.return();
                 }
               } finally {
-                if (_didIteratorError3) {
-                  throw _iteratorError3;
+                if (_didIteratorError4) {
+                  throw _iteratorError4;
                 }
               }
             }
@@ -2347,41 +2387,41 @@ var gameReducer = function gameReducer(game, action) {
     case 'COLLECT_ENTITIES':
       {
         var _entities = action.entities,
-            _position4 = action.position;
+            _position5 = action.position;
 
-        if (_position4 != null) {
-          game.prevInteractPosition = _position4;
+        if (_position5 != null) {
+          game.prevInteractPosition = _position5;
         }
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
 
         try {
-          for (var _iterator4 = _entities[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-            var _entity5 = _step4.value;
+          for (var _iterator5 = _entities[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var _entity6 = _step5.value;
 
-            _entity5.collectedAs = _entity5.type;
-            changeEntityType(game, _entity5, _entity5.type, 'AGENT');
-            delete _entity5.NOT_ANIMATED;
-            delete game.NOT_ANIMATED[_entity5.id];
-            _entity5.AGENT = true;
-            _entity5.blockingTypes = [].concat(_toConsumableArray(Entities.AGENT.config.blockingTypes));
-            _entity5.actions = [];
+            _entity6.collectedAs = _entity6.type;
+            changeEntityType(game, _entity6, _entity6.type, 'AGENT');
+            delete _entity6.NOT_ANIMATED;
+            delete game.NOT_ANIMATED[_entity6.id];
+            _entity6.AGENT = true;
+            _entity6.blockingTypes = [].concat(_toConsumableArray(Entities.AGENT.config.blockingTypes));
+            _entity6.actions = [];
             // entity.playerID = entity.playerID != null ? entity.playerID : game.playerID;
-            _entity5.MOVE = {
+            _entity6.MOVE = {
               duration: 4,
               spriteOrder: [1]
             };
-            _entity5.MOVE_TURN = {
+            _entity6.MOVE_TURN = {
               duration: 2,
               spriteOrder: [1]
             };
-            _entity5.TURN = {
+            _entity6.TURN = {
               duration: 1,
               spriteOrder: [1]
             };
-            _entity5.task = 'RETURN';
-            _entity5.RETURN = {
+            _entity6.task = 'RETURN';
+            _entity6.RETURN = {
               base: 0,
               forwardMovementBonus: 0,
               prevPositionPenalty: -100,
@@ -2389,16 +2429,16 @@ var gameReducer = function gameReducer(game, action) {
             };
           }
         } catch (err) {
-          _didIteratorError4 = true;
-          _iteratorError4 = err;
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return) {
-              _iterator4.return();
+            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+              _iterator5.return();
             }
           } finally {
-            if (_didIteratorError4) {
-              throw _iteratorError4;
+            if (_didIteratorError5) {
+              throw _iteratorError5;
             }
           }
         }
@@ -2502,9 +2542,9 @@ function createEntitiesReducer(game, action) {
           return !e.notOccupying;
         }).length > 0;
         if (_occupied) continue;
-        var _entity6 = make.apply(undefined, [game, pos].concat(_toConsumableArray(args)));
-        if (!entityInsideGrid(game, _entity6)) continue;
-        addEntity(game, _entity6);
+        var _entity7 = make.apply(undefined, [game, pos].concat(_toConsumableArray(args)));
+        if (!entityInsideGrid(game, _entity7)) continue;
+        addEntity(game, _entity7);
       }
     }
   }
@@ -2880,6 +2920,7 @@ var rootReducer = function rootReducer(state, action) {
     case 'SET_SENT_WARNING':
     case 'SET_IN_WAVE':
     case 'SUBTRACT_BASE_RESOURCES':
+    case 'ENQUEUE_TARGET':
     case 'ENQUEUE_ENTITY_ACTION':
       {
         if (!state.game) return state;
@@ -3354,6 +3395,9 @@ var updateBallistics = function updateBallistics(game) {
     if (ballistic.warhead != null) {
       // const target = game.entities[ballistic.targetID];
       var target = { position: _extends({}, game.crosshairPos) };
+      if (ballistic.targetPos) {
+        target.position = ballistic.targetPos;
+      }
       if (target != null) {
         if (Math.abs(dist(ballistic.position, target.position)) <= 1) {
           inRadius = true;
@@ -3500,8 +3544,12 @@ var updateTowers = function updateTowers(game) {
       }
     }
 
+    var projectileType = game.placeType;
+
     // get theta to target
     var targetTheta = 0;
+    var targetPos = game.crosshairPos;
+    var usedQueuedTarget = false;
     if (tower.targetID != null) {
       var target = game.entities[tower.targetID];
       // clear dead target
@@ -3509,14 +3557,19 @@ var updateTowers = function updateTowers(game) {
         tower.targetID = null;
         // else aim at living target
       } else {
-        var targetPos = game.entities[tower.targetID].position;
+        var _targetPos = game.entities[tower.targetID].position;
         var towerPos = add({ x: 0.5, y: 0.5 }, tower.position);
-        targetTheta = vectorTheta(subtract(towerPos, targetPos));
+        targetTheta = vectorTheta(subtract(towerPos, _targetPos));
       }
-    } else if (tower.TARGETED && game.crosshairPos) {
-      var _targetPos = game.crosshairPos;
+    } else if (tower.TARGETED && (game.crosshairPos || tower.targetQueue && tower.targetQueue.length > 0)) {
+      if (tower.targetQueue && tower.targetQueue.length > 0) {
+        var queuedTarget = tower.targetQueue.shift();
+        usedQueuedTarget = true;
+        targetPos = queuedTarget.position;
+        projectileType = queuedTarget.projectileType;
+      }
       var _towerPos = add({ x: 0.5, y: 0.5 }, tower.position);
-      targetTheta = vectorTheta(subtract(_towerPos, _targetPos));
+      targetTheta = vectorTheta(subtract(_towerPos, targetPos));
     }
 
     var shouldShoot = false;
@@ -3533,6 +3586,8 @@ var updateTowers = function updateTowers(game) {
     tower.theta = (2 * Math.PI + tower.theta) % (2 * Math.PI);
 
     // shoot at target
+    var didShoot = false;
+    var canAfford = true;
     if ((tower.targetID != null || tower.TARGETED) && !isActionTypeQueued(tower, 'SHOOT') && shouldShoot) {
       if (tower.needsCooldown) {
         tower.shotsSinceCooldown += 1;
@@ -3542,21 +3597,40 @@ var updateTowers = function updateTowers(game) {
         }
       }
 
-      var canAfford = true;
-      if (tower.launchCost) {
-        canAfford = canAffordBuilding(game.bases[game.playerID], tower.launchCost);
-        if (canAfford) {
-          for (var resource in tower.launchCost) {
-            game.bases[game.playerID].resources[resource] -= tower.launchCost[resource];
-          }
+      var cost = 0;
+      if (Entities[projectileType].config.cost) {
+        cost = Entities[projectileType].config.cost;
+        if (!canAffordBuilding(game, cost)) {
+          canAfford = false;
+          tower.targetQueue = [];
+          game.placeType = 'BULLET';
         }
       }
 
-      if (canAfford) {
-        queueAction(game, tower, makeAction(game, tower, 'SHOOT',
-        // {theta: tower.theta, projectileType: tower.projectileType}
-        { theta: tower.theta, projectileType: game.placeType }));
+      var unoccupied = true;
+      if (projectileType == 'DIRT') {
+        unoccupied = lookupInGrid(game.grid, targetPos).map(function (id) {
+          return game.entities[id];
+        }).filter(function (e) {
+          return e.type == 'DIRT';
+        }).length == 0;
       }
+
+      if (canAfford && unoccupied) {
+        game.money -= cost;
+        var action = makeAction(game, tower, 'SHOOT',
+        // {theta: tower.theta, projectileType: tower.projectileType}
+        { theta: tower.theta, projectileType: projectileType, targetPos: targetPos });
+        if (projectileType == 'DIRT') {
+          action.duration /= 3;
+        }
+        queueAction(game, tower, action);
+        didShoot = true;
+      }
+    }
+    // put queued target back
+    if (!didShoot && usedQueuedTarget && canAfford) {
+      tower.targetQueue.unshift({ position: targetPos, projectileType: projectileType });
     }
   }
 };
@@ -6823,7 +6897,8 @@ var agentDoMove = function agentDoMove(game, entity, nextPos) {
 
 var entityShoot = function entityShoot(game, entity, payload) {
   var theta = payload.theta,
-      projectileType = payload.projectileType;
+      projectileType = payload.projectileType,
+      targetPos = payload.targetPos;
 
   var projectile = null;
   switch (projectileType) {
@@ -6839,6 +6914,7 @@ var entityShoot = function entityShoot(game, entity, payload) {
       {
         var _position = round(add(makeVector(theta, -4), entity.position));
         projectile = Entities.MISSILE.make(game, _position, entity.playerID, Entities.DYNAMITE.make(game, _position, entity.playerID), theta + Math.PI, 150, entity.targetID);
+        projectile.targetPos = game.crosshairPos;
         projectile.blockingTypes.push('MISSILE');
         game.placeType = 'BULLET';
         break;
@@ -6847,6 +6923,16 @@ var entityShoot = function entityShoot(game, entity, payload) {
       {
         var _position2 = _extends({}, entity.position);
         projectile = Entities[projectileType].make(game, add({ x: 0.5, y: 0.5 }, _position2), entity.playerID);
+      }
+    case 'DIRT':
+      {
+        var _position3 = round(add(makeVector(theta, -4), entity.position));
+        projectile = Entities.MISSILE.make(game, _position3, entity.playerID, Entities.DIRT.make(game, _position3), theta + Math.PI, 150, entity.targetID);
+        projectile.targetPos = game.crosshairPos;
+        if (targetPos) {
+          projectile.targetPos = targetPos;
+        }
+        projectile.blockingTypes.push('MISSILE');
       }
   }
   if (projectile != null) {
@@ -6864,7 +6950,11 @@ var entityDie = function entityDie(game, entity) {
   }
 
   if (entity.holding != null) {
-    putdownEntity(game, entity.holding, entity.position);
+    var position = entity.position;
+    if (entity.targetPos != null) {
+      position = entity.targetPos;
+    }
+    putdownEntity(game, entity.holding, position);
   }
 
   if (entity.type == 'MONSTER') {
@@ -7707,7 +7797,7 @@ var insertEntityInGrid = function insertEntityInGrid(game, entity) {
 
     game.staleTiles.push(entity.id);
     var neighbors = getNeighborEntities(game, entity, true /*external*/).filter(function (e) {
-      return e.type == entity.type;
+      return e != null && e.type == entity.type;
     }).map(function (e) {
       return e.id;
     });
@@ -8870,7 +8960,7 @@ var initBaseState = function initBaseState(gridSize, numPlayers) {
     numPlayers: numPlayers,
 
     // tower-defense-specific
-    money: 150,
+    money: 50,
     score: 0,
     crosshairPos: null,
     placeType: 'BULLET',
@@ -10838,7 +10928,8 @@ var useEffect = React.useEffect,
 
 var _require11 = require('../utils/vectors'),
     add = _require11.add,
-    subtract = _require11.subtract;
+    subtract = _require11.subtract,
+    equals = _require11.equals;
 
 var _require12 = require('../utils/gridHelpers'),
     lookupInGrid = _require12.lookupInGrid;
@@ -11022,26 +11113,61 @@ function registerHotkeys(dispatch) {
 function configureMouseHandlers(game) {
   var handlers = {
     mouseMove: function mouseMove(state, dispatch, gridPos) {
-      // const dim = inLine(gridPos, state.game.mouse.prevPos);
-      // if (dim) {
-      //   for (let i = 1; i <= dim.dist; i++) {
-      //     const pos = {...state.game.mouse.prevPos};
-      //     pos[dim.dim] += (i * dim.mult)
-      //     if (state.game.mouse.isLeftDown) {
-      //       handlePlace(state, dispatch, pos);
-      //     }
-      //   }
-      // } else if (state.game.mouse.isLeftDown) {
-      //   handlePlace(state, dispatch, gridPos);
-      // }
+      var game = state.game;
+      if (!game.mouse.isLeftDown) return;
+      var tower = game.entities[game.BASE[0]];
+      if (game.prevInteractPos) {
+        var prevPos = game.prevInteractPos.pos;
+        var pos = prevPos;
+        dispatch({ type: 'SET', property: 'crosshairPos', value: gridPos });
+        if (game.placeType == 'DIRT') {
+          dispatch({ type: 'ENQUEUE_TARGET', entity: tower,
+            position: gridPos, projectileType: 'DIRT'
+          });
+        }
+        while (!equals(pos, gridPos)) {
+          var diff = subtract(pos, gridPos);
+          pos = {
+            x: diff.x == 0 ? pos.x : pos.x - diff.x / Math.abs(diff.x),
+            y: diff.y == 0 ? pos.y : pos.y - diff.y / Math.abs(diff.y)
+          };
+          dispatch({ type: 'SET', property: 'crosshairPos', value: gridPos });
+          if (game.placeType == 'DIRT') {
+            dispatch({ type: 'ENQUEUE_TARGET', entity: tower,
+              position: gridPos, projectileType: 'DIRT'
+            });
+          }
+        }
+        dispatch({ type: 'SET',
+          property: 'prevInteractPos',
+          value: { pos: gridPos }
+        });
+      } else {
+        dispatch({ type: 'SET', property: 'crosshairPos', value: gridPos });
+        if (game.placeType == 'DIRT') {
+          dispatch({ type: 'ENQUEUE_TARGET', entity: tower,
+            position: gridPos, projectileType: 'DIRT'
+          });
+        }
+        dispatch({ type: 'SET',
+          property: 'prevInteractPos',
+          value: { pos: gridPos }
+        });
+      }
     },
     leftDown: function leftDown(state, dispatch, gridPos) {
       // handlePlace(state, dispatch, gridPos, true /* ignore prevPos */);
       dispatch({ type: 'SET', property: 'crosshairPos', value: gridPos });
     },
-    scroll: function scroll(state, dispatch, zoom) {
-      // dispatch({type: 'INCREMENT_ZOOM', zoom});
+    leftUp: function leftUp(state, dispatch, gridPos) {
+      dispatch({ type: 'SET',
+        property: 'prevInteractPos',
+        value: null
+      });
     }
+    // scroll: (state, dispatch, zoom) => {
+    //   dispatch({type: 'INCREMENT_ZOOM', zoom});
+    // },
   };
   return handlers;
 }

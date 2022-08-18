@@ -150,7 +150,7 @@ const agentDoMove = (game: Game, entity: Entity, nextPos: Vector): boolean => {
 }
 
 const entityShoot = (game: Game, entity: Entity, payload) => {
-  const {theta, projectileType} = payload;
+  const {theta, projectileType, targetPos} = payload;
   let projectile = null;
   switch (projectileType) {
     case 'LASER':
@@ -171,6 +171,7 @@ const entityShoot = (game: Game, entity: Entity, payload) => {
         150,
         entity.targetID,
       );
+      projectile.targetPos = game.crosshairPos;
       projectile.blockingTypes.push('MISSILE');
       game.placeType = 'BULLET';
       break;
@@ -180,6 +181,21 @@ const entityShoot = (game: Game, entity: Entity, payload) => {
       projectile = Entities[projectileType].make(
         game, add({x: 0.5, y: 0.5}, position), entity.playerID,
       );
+    }
+    case 'DIRT': {
+      const position = round(add(makeVector(theta, -4), entity.position));
+      projectile = Entities.MISSILE.make(
+        game, position, entity.playerID,
+        Entities.DIRT.make(game, position),
+        theta + Math.PI,
+        150,
+        entity.targetID,
+      );
+      projectile.targetPos = game.crosshairPos;
+      if (targetPos) {
+        projectile.targetPos = targetPos;
+      }
+      projectile.blockingTypes.push('MISSILE');
     }
   }
   if (projectile != null) {
@@ -198,7 +214,11 @@ const entityDie = (game: Game, entity: Entity): void => {
   }
 
   if (entity.holding != null) {
-    putdownEntity(game, entity.holding, entity.position);
+    let position = entity.position;
+    if (entity.targetPos != null) {
+      position = entity.targetPos;
+    }
+    putdownEntity(game, entity.holding, position);
   }
 
   if (entity.type == 'MONSTER') {

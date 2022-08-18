@@ -69,6 +69,7 @@ const make = (
     PIERCING: false,
 
     targetID,
+    targetPos: null,
 
     prevPositions: [add(position, {x: config.width / 2, y: config.height / 2})],
   };

@@ -1,9 +1,13 @@
 
 - - - - - - - FIX - - - - - - - -
+  - if you target a missile right next to yourself it shoots to the end
+    of the screen but then still blows up next to you
+
+  - queuing dirt
+    - need a way to break out of the queue?
 
 
 - - - - - - GAME MECHANICS - - - - - -
-  - add dirt to placement that moves to location
   - make turret more satisfying to shoot
     - faster fire rate
     - recoil

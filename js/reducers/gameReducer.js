@@ -27,6 +27,19 @@ const gameReducer = (game: Game, action: Action): Game => {
       game[property] = value;
       return game;
     }
+    case 'ENQUEUE_TARGET': {
+      const {position, entity, projectileType} = action;
+      if (!entity.targetQueue) {
+        entity.targetQueue = [];
+      }
+      for (const target of entity.targetQueue) {
+        if (equals(target.position, position)) {
+          return game; // don't queue same position twice
+        }
+      }
+      entity.targetQueue.push({position, projectileType});
+      return game;
+    }
     case 'ENQUEUE_ENTITY_ACTION': {
       const {entityAction, entity} = action;
       queueAction(game, entity, entityAction);

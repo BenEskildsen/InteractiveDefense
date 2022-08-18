@@ -821,9 +821,9 @@ var config = {
   NOT_ANIMATED: true,
   TILED: true,
   COLLECTABLE: true,
-  // cost: 1,
+  cost: 1,
   hp: 10,
-  name: 'dirt',
+  // name: 'Dirt',
 
   isExplosionImmune: true
 };
@@ -1096,7 +1096,7 @@ var config = {
     duration: 1,
     spriteOrder: [0]
   },
-  cost: 10
+  cost: 20
 };
 
 var make = function make(game, position, playerID, warhead, theta, velocity, targetID) {
@@ -1119,6 +1119,7 @@ var make = function make(game, position, playerID, warhead, theta, velocity, tar
     PIERCING: false,
 
     targetID: targetID,
+    targetPos: null,
 
     prevPositions: [add(position, { x: config.width / 2, y: config.height / 2 })]
   });
@@ -4499,7 +4500,7 @@ var insertEntityInGrid = function insertEntityInGrid(game, entity) {
 
     game.staleTiles.push(entity.id);
     var neighbors = getNeighborEntities(game, entity, true /*external*/).filter(function (e) {
-      return e.type == entity.type;
+      return e != null && e.type == entity.type;
     }).map(function (e) {
       return e.id;
     });

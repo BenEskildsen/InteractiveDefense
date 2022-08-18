@@ -21,7 +21,7 @@ const {
 const ExperimentalSidebar = require('./ExperimentalSidebar.react');
 const {handleCollect, handlePlace} = require('../thunks/mouseInteractions');
 const {useEffect, useState, useMemo, Component, memo} = React;
-const {add, subtract} = require('../utils/vectors');
+const {add, subtract, equals} = require('../utils/vectors');
 const {lookupInGrid} = require('../utils/gridHelpers');
 const {clamp, isMobile} = require('../utils/helpers');
 const {
@@ -205,26 +205,61 @@ function registerHotkeys(dispatch) {
 function configureMouseHandlers(game) {
   const handlers = {
     mouseMove: (state, dispatch, gridPos) => {
-      // const dim = inLine(gridPos, state.game.mouse.prevPos);
-      // if (dim) {
-      //   for (let i = 1; i <= dim.dist; i++) {
-      //     const pos = {...state.game.mouse.prevPos};
-      //     pos[dim.dim] += (i * dim.mult)
-      //     if (state.game.mouse.isLeftDown) {
-      //       handlePlace(state, dispatch, pos);
-      //     }
-      //   }
-      // } else if (state.game.mouse.isLeftDown) {
-      //   handlePlace(state, dispatch, gridPos);
-      // }
+      const game = state.game;
+      if (!game.mouse.isLeftDown) return;
+      const tower = game.entities[game.BASE[0]];
+      if (game.prevInteractPos) {
+        const prevPos = game.prevInteractPos.pos;
+        let pos = prevPos;
+        dispatch({type: 'SET', property: 'crosshairPos', value: gridPos});
+        if (game.placeType == 'DIRT') {
+          dispatch({type: 'ENQUEUE_TARGET', entity: tower,
+            position: gridPos, projectileType: 'DIRT',
+          });
+        }
+        while (!equals(pos, gridPos)) {
+          const diff = subtract(pos, gridPos);
+          pos = {
+            x: diff.x == 0 ? pos.x : pos.x - diff.x / Math.abs(diff.x),
+            y: diff.y == 0 ? pos.y : pos.y - diff.y / Math.abs(diff.y),
+          };
+          dispatch({type: 'SET', property: 'crosshairPos', value: gridPos});
+          if (game.placeType == 'DIRT') {
+            dispatch({type: 'ENQUEUE_TARGET', entity: tower,
+              position: gridPos, projectileType: 'DIRT',
+            });
+          }
+        }
+        dispatch({type: 'SET',
+          property: 'prevInteractPos',
+          value: {pos: gridPos},
+        });
+      } else {
+        dispatch({type: 'SET', property: 'crosshairPos', value: gridPos});
+        if (game.placeType == 'DIRT') {
+          dispatch({type: 'ENQUEUE_TARGET', entity: tower,
+            position: gridPos, projectileType: 'DIRT',
+          });
+        }
+        dispatch({type: 'SET',
+          property: 'prevInteractPos',
+          value: {pos: gridPos},
+        });
+      }
     },
     leftDown: (state, dispatch, gridPos) => {
       // handlePlace(state, dispatch, gridPos, true /* ignore prevPos */);
       dispatch({type: 'SET', property: 'crosshairPos', value: gridPos});
     },
-    scroll: (state, dispatch, zoom) => {
-      // dispatch({type: 'INCREMENT_ZOOM', zoom});
+    leftUp: (state, dispatch, gridPos) => {
+      dispatch({type: 'SET',
+        property: 'prevInteractPos',
+        value: null,
+      });
     },
+    // scroll: (state, dispatch, zoom) => {
+    //   dispatch({type: 'INCREMENT_ZOOM', zoom});
+    // },
   }
   return handlers;
 }

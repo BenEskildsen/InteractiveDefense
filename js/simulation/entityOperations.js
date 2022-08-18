@@ -115,7 +115,7 @@ const insertEntityInGrid = (game: Game, entity: Entity): void => {
   if (entity.TILED) {
     game.staleTiles.push(entity.id);
     const neighbors = getNeighborEntities(game, entity, true /*external*/)
-      .filter(e => e.type == entity.type)
+      .filter(e => e != null && e.type == entity.type)
       .map(e => e.id);
     game.staleTiles.push(...neighbors);
   }

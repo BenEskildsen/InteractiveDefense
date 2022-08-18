@@ -9,9 +9,9 @@ const config = {
   NOT_ANIMATED: true,
   TILED: true,
   COLLECTABLE: true,
-  // cost: 1,
+  cost: 1,
   hp: 10,
-  name: 'dirt',
+  // name: 'Dirt',
 
   isExplosionImmune: true,
 };

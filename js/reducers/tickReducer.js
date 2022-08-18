@@ -223,6 +223,9 @@ const updateBallistics = (game): void => {
     if (ballistic.warhead != null) {
       // const target = game.entities[ballistic.targetID];
       const target = {position: {...game.crosshairPos}};
+      if (ballistic.targetPos) {
+        target.position = ballistic.targetPos;
+      }
       if (target != null) {
         if (Math.abs(dist(ballistic.position, target.position)) <= 1) {
           inRadius = true;
@@ -328,8 +331,12 @@ const updateTowers = (game): void => {
       }
     }
 
+    let projectileType = game.placeType;
+
     // get theta to target
     let targetTheta = 0;
+    let targetPos = game.crosshairPos;
+    let usedQueuedTarget = false;
     if (tower.targetID != null) {
       const target = game.entities[tower.targetID];
       // clear dead target
@@ -341,10 +348,18 @@ const updateTowers = (game): void => {
         const towerPos = add({x: 0.5, y: 0.5}, tower.position);
         targetTheta = vectorTheta(subtract(towerPos, targetPos));
       }
-    } else if (tower.TARGETED && game.crosshairPos) {
-        const targetPos = game.crosshairPos;
-        const towerPos = add({x: 0.5, y: 0.5}, tower.position);
-        targetTheta = vectorTheta(subtract(towerPos, targetPos));
+    } else if (
+      tower.TARGETED &&
+      (game.crosshairPos || (tower.targetQueue && tower.targetQueue.length > 0))
+    ) {
+      if (tower.targetQueue && tower.targetQueue.length > 0) {
+        const queuedTarget = tower.targetQueue.shift();
+        usedQueuedTarget = true;
+        targetPos = queuedTarget.position;
+        projectileType = queuedTarget.projectileType
+      }
+      const towerPos = add({x: 0.5, y: 0.5}, tower.position);
+      targetTheta = vectorTheta(subtract(towerPos, targetPos));
     }
 
 
@@ -368,6 +383,8 @@ const updateTowers = (game): void => {
     tower.theta = (2 * Math.PI + tower.theta) % (2 * Math.PI);
 
     // shoot at target
+    let didShoot = false;
+    let canAfford = true;
     if (
       (tower.targetID != null || tower.TARGETED)
         && !isActionTypeQueued(tower, 'SHOOT') && shouldShoot
@@ -383,26 +400,44 @@ const updateTowers = (game): void => {
         }
       }
 
-      let canAfford = true;
-      if (tower.launchCost) {
-        canAfford = canAffordBuilding(game.bases[game.playerID], tower.launchCost);
-        if (canAfford) {
-          for (const resource in tower.launchCost) {
-            game.bases[game.playerID].resources[resource] -= tower.launchCost[resource];
-          }
+      let cost = 0;
+      if (Entities[projectileType].config.cost) {
+        cost = Entities[projectileType].config.cost;
+        if (!canAffordBuilding(game, cost)) {
+          canAfford = false;
+          tower.targetQueue = [];
+          game.placeType = 'BULLET';
         }
       }
 
-      if (canAfford) {
-        queueAction(
-          game, tower,
+      let unoccupied = true;
+      if (projectileType == 'DIRT') {
+        unoccupied = lookupInGrid(game.grid, targetPos)
+          .map(id => game.entities[id])
+          .filter(e => e.type == 'DIRT')
+          .length == 0;
+      }
+
+      if (canAfford && unoccupied) {
+        game.money -= cost;
+        const action =
           makeAction(
             game, tower, 'SHOOT',
             // {theta: tower.theta, projectileType: tower.projectileType}
-            {theta: tower.theta, projectileType: game.placeType}
-          ),
+            {theta: tower.theta, projectileType, targetPos}
+          );
+        if (projectileType == 'DIRT') {
+          action.duration /= 3;
+        }
+        queueAction(
+          game, tower, action,
         );
+        didShoot = true;
       }
+    }
+    // put queued target back
+    if (!didShoot && usedQueuedTarget && canAfford) {
+      tower.targetQueue.unshift({position: targetPos, projectileType});
     }
 
   }
