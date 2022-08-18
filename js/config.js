@@ -6,8 +6,8 @@ const config = {
   canvasWidth: 1000,
   canvasHeight: 800,
 
-  viewWidth: 25,
-  viewHeight: 50,
+  viewWidth: 21,
+  viewHeight: 36,
   useFullScreen: true,
   cellWidth: 20,
   cellHeight: 16,

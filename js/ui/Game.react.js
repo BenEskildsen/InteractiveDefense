@@ -123,7 +123,6 @@ function Game(props: Props): React.Node {
     </div>
   );
 }
-
       // <Canvas
       //   dispatch={dispatch}
       //   tickInterval={tickInterval}
@@ -132,6 +131,7 @@ function Game(props: Props): React.Node {
       //   isExperimental={state.screen == 'EDITOR'}
       //   focusedEntity={game.focusedEntity}
       // />
+
 
 function registerHotkeys(dispatch) {
 
@@ -257,9 +257,9 @@ function configureMouseHandlers(game) {
         value: null,
       });
     },
-    // scroll: (state, dispatch, zoom) => {
-    //   dispatch({type: 'INCREMENT_ZOOM', zoom});
-    // },
+    scroll: (state, dispatch, zoom) => {
+      dispatch({type: 'INCREMENT_ZOOM', zoom});
+    },
   }
   return handlers;
 }

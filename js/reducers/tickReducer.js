@@ -305,31 +305,31 @@ const updateTowers = (game): void => {
     const config = Entities[tower.type].config;
 
     // choose target if possible
-    if (tower.targetID == null && !tower.TARGETED) {
-      const possibleTargets = [];
-      for (const monsterID of game.MONSTER) {
-        const monster = game.entities[monsterID];
-        if (monster.playerID != tower.playerID) {
-          possibleTargets.push(monsterID);
-        }
-      }
+    // if (tower.targetID == null && !tower.TARGETED) {
+    //   const possibleTargets = [];
+    //   for (const monsterID of game.MONSTER) {
+    //     const monster = game.entities[monsterID];
+    //     if (monster.playerID != tower.playerID) {
+    //       possibleTargets.push(monsterID);
+    //     }
+    //   }
 
-      const highPriTargets = [];
-      const baseNeighbors =
-        getNeighborEntities(game, game.entities[game.BASE[0]], true /*external*/)
-          .concat(getNeighborEntities(game, tower, true /*external*/));
-      for (const entity of baseNeighbors) {
-        if (entity.type == 'MONSTER') {
-          highPriTargets.push(entity.id);
-        }
-      }
+    //   const highPriTargets = [];
+    //   const baseNeighbors =
+    //     getNeighborEntities(game, game.entities[game.BASE[0]], true /*external*/)
+    //       .concat(getNeighborEntities(game, tower, true /*external*/));
+    //   for (const entity of baseNeighbors) {
+    //     if (entity.type == 'MONSTER') {
+    //       highPriTargets.push(entity.id);
+    //     }
+    //   }
 
-      if (highPriTargets.length > 0) {
-        tower.targetID = oneOf(highPriTargets);
-      } else {
-        tower.targetID = oneOf(possibleTargets);
-      }
-    }
+    //   if (highPriTargets.length > 0) {
+    //     tower.targetID = oneOf(highPriTargets);
+    //   } else {
+    //     tower.targetID = oneOf(possibleTargets);
+    //   }
+    // }
 
     let projectileType = game.placeType;
 
@@ -337,18 +337,19 @@ const updateTowers = (game): void => {
     let targetTheta = 0;
     let targetPos = game.crosshairPos;
     let usedQueuedTarget = false;
-    if (tower.targetID != null) {
-      const target = game.entities[tower.targetID];
-      // clear dead target
-      if (target == null) {
-        tower.targetID = null;
-      // else aim at living target
-      } else {
-        const targetPos = game.entities[tower.targetID].position;
-        const towerPos = add({x: 0.5, y: 0.5}, tower.position);
-        targetTheta = vectorTheta(subtract(towerPos, targetPos));
-      }
-    } else if (
+    // if (tower.targetID != null) {
+    //   const target = game.entities[tower.targetID];
+    //   // clear dead target
+    //   if (target == null) {
+    //     tower.targetID = null;
+    //   // else aim at living target
+    //   } else {
+    //     const targetPos = game.entities[tower.targetID].position;
+    //     const towerPos = add({x: 0.5, y: 0.5}, tower.position);
+    //     targetTheta = vectorTheta(subtract(towerPos, targetPos));
+    //   }
+    // } else
+    if (
       tower.TARGETED &&
       (game.crosshairPos || (tower.targetQueue && tower.targetQueue.length > 0))
     ) {
@@ -379,26 +380,29 @@ const updateTowers = (game): void => {
     ) {
       tower.thetaSpeed = -1 * config.maxThetaSpeed;
       tower.theta += tower.thetaSpeed;
+    } else {
+      console.log("tower turn problem");
     }
     tower.theta = (2 * Math.PI + tower.theta) % (2 * Math.PI);
 
     // shoot at target
     let didShoot = false;
     let canAfford = true;
+    let unoccupied = true;
     if (
       (tower.targetID != null || tower.TARGETED)
         && !isActionTypeQueued(tower, 'SHOOT') && shouldShoot
     ) {
-      if (tower.needsCooldown) {
-        tower.shotsSinceCooldown += 1;
-        if (tower.shotsSinceCooldown > tower.shotsTillCooldown) {
-          tower.shotsSinceCooldown = 0;
-          queueAction(
-            game, tower,
-            makeAction(game, tower, 'COOLDOWN', null),
-          );
-        }
-      }
+      // if (tower.needsCooldown) {
+      //   tower.shotsSinceCooldown += 1;
+      //   if (tower.shotsSinceCooldown > tower.shotsTillCooldown) {
+      //     tower.shotsSinceCooldown = 0;
+      //     queueAction(
+      //       game, tower,
+      //       makeAction(game, tower, 'COOLDOWN', null),
+      //     );
+      //   }
+      // }
 
       let cost = 0;
       if (Entities[projectileType].config.cost) {
@@ -410,7 +414,6 @@ const updateTowers = (game): void => {
         }
       }
 
-      let unoccupied = true;
       if (projectileType == 'DIRT') {
         unoccupied = lookupInGrid(game.grid, targetPos)
           .map(id => game.entities[id])
@@ -426,7 +429,7 @@ const updateTowers = (game): void => {
             // {theta: tower.theta, projectileType: tower.projectileType}
             {theta: tower.theta, projectileType, targetPos}
           );
-        if (projectileType == 'DIRT') {
+        if (projectileType == 'DIRT' && usedQueuedTarget) {
           action.duration /= 3;
         }
         queueAction(
@@ -436,7 +439,7 @@ const updateTowers = (game): void => {
       }
     }
     // put queued target back
-    if (!didShoot && usedQueuedTarget && canAfford) {
+    if (!didShoot && usedQueuedTarget && canAfford && unoccupied) {
       tower.targetQueue.unshift({position: targetPos, projectileType});
     }
 

@@ -21,6 +21,9 @@
 
 
 - - - - - - - PLAYTESTING - - - - - - - -
+  - dragging bullet crosshair is kind of hard to aim
+  - ticker to tell player to tap to aim
+  - when a missile collides and hits something, don't move the explosion to targetPos
 
 
 - - - - - - REFACTOR - - - - - - - -
