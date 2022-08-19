@@ -365,20 +365,24 @@ const updateTowers = (game): void => {
 
 
     let shouldShoot = false;
-    if (Math.abs(tower.theta - targetTheta) <= tower.maxThetaSpeed) {
+    let maxThetaSpeed = config.maxThetaSpeed;
+    if (game.upgrades.TURN_RATE) {
+      maxThetaSpeed += 0.1 * game.upgrades.TURN_RATE;
+    }
+    if (Math.abs(tower.theta - targetTheta) <= maxThetaSpeed) {
       tower.theta = targetTheta;
       shouldShoot = true;
     } else if (
       (tower.theta < targetTheta && targetTheta - tower.theta < Math.PI) ||
       (tower.theta > targetTheta && tower.theta - targetTheta > Math.PI)
     ) {
-      tower.thetaSpeed = config.maxThetaSpeed;
+      tower.thetaSpeed = maxThetaSpeed;
       tower.theta += tower.thetaSpeed;
     } else if (
       (tower.theta < targetTheta && targetTheta - tower.theta > Math.PI) ||
       (tower.theta > targetTheta && tower.theta - targetTheta < Math.PI)
     ) {
-      tower.thetaSpeed = -1 * config.maxThetaSpeed;
+      tower.thetaSpeed = -1 * maxThetaSpeed;
       tower.theta += tower.thetaSpeed;
     } else {
       console.log("tower turn problem");
@@ -432,6 +436,9 @@ const updateTowers = (game): void => {
         if (projectileType == 'DIRT' && usedQueuedTarget) {
           action.duration /= 3;
         }
+        if (projectileType == 'BULLET' && game.upgrades.FIRE_RATE) {
+          action.duration /= (1 + (game.upgrades.FIRE_RATE / 2));
+        }
         queueAction(
           game, tower, action,
         );
@@ -457,7 +464,7 @@ const updateBases = (game: Game): void => {
 };
 
 const updateFarms = (game: Game): void => {
-  for (const id of game.FARM) {
+  for (const id of game.UPGRADE) {
     const farm = game.entities[id];
     farm.theta += farm.maxThetaSpeed;
     farm.theta = farm.theta % (2 * Math.PI);

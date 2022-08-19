@@ -213,6 +213,18 @@ const entityDie = (game: Game, entity: Entity): void => {
     triggerExplosion(game, entity);
   }
 
+  if (entity.type == 'UPGRADE') {
+    if (!game.upgrades[entity.upgradeType]) {
+      game.upgrades[entity.upgradeType] = 0;
+    }
+    game.upgrades[entity.upgradeType] += 1;
+    game.ticker = {
+      message: 'Upgraded ' + entity.upgradeType,
+      time: 3000,
+      max: 3000,
+    };
+  }
+
   if (entity.holding != null) {
     let position = entity.position;
     if (entity.targetPos != null) {

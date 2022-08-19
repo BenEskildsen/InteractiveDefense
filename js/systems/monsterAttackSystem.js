@@ -33,6 +33,13 @@ const initMonsterAttackSystem = (store) => {
       }
       const monster = Entities.MONSTER.make(game, position, 2);
       dispatch({type: 'CREATE_ENTITY', entity: monster});
+
+      if (Math.random() < 0.1) {
+        const upgrade = Entities.UPGRADE.make(
+          game, position, oneOf(Entities.UPGRADE.config.upgradeTypes),
+        );
+        dispatch({type: 'CREATE_ENTITY', entity: upgrade});
+      }
     }
 
   });

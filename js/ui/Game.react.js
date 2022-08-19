@@ -200,6 +200,18 @@ function registerHotkeys(dispatch) {
       }
     }
   });
+
+  dispatch({
+    type: 'SET_HOTKEY', press: 'onKeyDown',
+    key: 'P',
+    fn: (s) => {
+      const game = s.getState().game;
+      s.dispatch({type: 'SET',
+        property: 'showPheromoneValues',
+        value: !game.showPheromoneValues,
+      });
+    }
+  });
 }
 
 function configureMouseHandlers(game) {
@@ -257,9 +269,9 @@ function configureMouseHandlers(game) {
         value: null,
       });
     },
-    scroll: (state, dispatch, zoom) => {
-      dispatch({type: 'INCREMENT_ZOOM', zoom});
-    },
+    // scroll: (state, dispatch, zoom) => {
+    //   dispatch({type: 'INCREMENT_ZOOM', zoom});
+    // },
   }
   return handlers;
 }
@@ -288,8 +300,9 @@ function Ticker(props) {
       style={{
         position: 'absolute',
         top: 100,
-        left: 120,
-        opacity: shouldUseIndex ? index : 1,
+        left: 0,
+        width: '100%',
+        // opacity: shouldUseIndex ? index : 1,
         pointerEvents: 'none',
         textShadow: '-1px -1px 0 #FFF, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff',
       }}

@@ -18,12 +18,17 @@
     - turret turn rate
     - missile radius
     - fire multiple projectiles in an arc
+  - upgrades:
+    - turn rate doesn't work well
+    - need stronger enemies too
+    - ticker placement needs to be better/readable names
 
 
 - - - - - - - PLAYTESTING - - - - - - - -
   - dragging bullet crosshair is kind of hard to aim
   - ticker to tell player to tap to aim
   - when a missile collides and hits something, don't move the explosion to targetPos
+  - have enemies attack from only one side at a time at first?
 
 
 - - - - - - REFACTOR - - - - - - - -

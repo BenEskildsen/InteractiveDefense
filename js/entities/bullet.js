@@ -17,7 +17,7 @@ const config = {
   blockingTypes: [
     'DOODAD', 'WORM', 'MONSTER',
     'TURBINE', 'IRON', 'STEEL', 'COAL',
-    'ICE', 'URANIUM',
+    'ICE', 'URANIUM', 'UPGRADE',
   ],
   cost: 0,
 

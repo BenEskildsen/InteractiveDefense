@@ -35,6 +35,7 @@ const Entities = {
   BASE: require('./base.js'),
 
   MONSTER: require('./monster.js'),
+  UPGRADE: require('./upgrade.js'),
 };
 
 module.exports = {

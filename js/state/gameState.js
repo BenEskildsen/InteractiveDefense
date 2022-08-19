@@ -57,6 +57,7 @@ const initBaseState = (
     score: 0,
     crosshairPos: null,
     placeType: 'BULLET',
+    upgrades: {},
 
     // for tracking difficulty and missiles
     difficulty: 'NORMAL',
