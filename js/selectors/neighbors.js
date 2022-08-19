@@ -48,7 +48,7 @@ const areNeighbors = (game: Game, entityA: Entity, entityB: Entity): boolean => 
   if (entityA == null || entityB == null) return false;
   const aNeighbors = getNeighborEntities(game, entityA, true);
   return aNeighbors
-    .filter(e => e.id === entityB.id)
+    .filter(e => e != null && e.id === entityB.id)
     .length > 0;
 };
 

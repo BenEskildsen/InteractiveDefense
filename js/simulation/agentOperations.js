@@ -241,6 +241,7 @@ const agentDecideAction = (game: Game, agent: Agent): void => {
   switch (agent.type) {
     case 'AGENT':
     case 'MONSTER':
+    case 'UPGRADE':
       monsterDecideAction(game, agent);
       break;
     case 'WORM':  {
@@ -264,7 +265,8 @@ const monsterDecideAction = (game, ant) => {
       return (
         e.type == 'BASE' || e.type == 'TURRET' || e.type == 'FARM' ||
         // only attack dirt/stone when path is blocked
-        (!hasPathToColony && (e.type == 'DIRT' || e.type == 'STONE'))
+        ((!hasPathToColony || Math.random() < 0.33) &&
+          (e.type == 'DIRT' || e.type == 'STONE'))
       );
     });
 

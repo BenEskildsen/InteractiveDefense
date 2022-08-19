@@ -9,8 +9,8 @@ var config = {
   canvasWidth: 1000,
   canvasHeight: 800,
 
-  viewWidth: 21,
-  viewHeight: 36,
+  viewWidth: 25,
+  viewHeight: 50,
   useFullScreen: true,
   cellWidth: 20,
   cellHeight: 16,
@@ -47,6 +47,7 @@ var config = {
     'ANT': './img/Ant2.png',
     'WORM': './img/Worm1.png',
     'BEETLE': './img/Beetle1.png',
+    'SPIDER': './img/Spider2.png',
 
     'FLOOR_TILE': './img/FloorTile1.png',
     'SKYLINE': './img/Skyline1.png'
@@ -908,8 +909,8 @@ var config = {
   hp: 10,
   width: 1,
   height: 1,
-  explosionRadius: 5,
-  damage: 40,
+  explosionRadius: 6,
+  damage: 50,
   timer: 1,
   age: 0,
   name: 'Bomb',
@@ -1172,11 +1173,11 @@ var _require3 = require('../render/renderAgent'),
     renderAgent = _require3.renderAgent;
 
 var config = {
-  maxHP: 20, // hack to prevent circular reference with render Agent
-  hp: 20,
+  maxHP: 25, // hack to prevent circular reference with render Agent
+  hp: 25,
   damage: 1,
-  width: 1,
-  height: 1,
+  width: 2,
+  height: 2,
   maxHold: 1,
   age: 0,
 
@@ -1779,24 +1780,46 @@ var _require2 = require('../utils/vectors'),
 var _require3 = require('../render/renderAgent'),
     renderAgent = _require3.renderAgent;
 
+var _require4 = require('../selectors/sprites'),
+    getSpiderSprite = _require4.getSpiderSprite;
+
 var config = {
-  hp: 5,
-  width: 2,
-  height: 2,
+  hp: 100,
+  maxHP: 100,
+  damage: 1,
+  width: 4,
+  height: 4,
   maxThetaSpeed: 0.05,
   // cost: 100,
   name: 'Upgrade',
   AGENT: true,
 
-  upgradeTypes: ['FIRE_RATE', 'TURN_RATE'],
+  upgradeTypes: ['FIRE_RATE', 'TURN_RATE', // 'TRIPLE_SHOT',
+  'DAMAGE', 'MONEY', 'MISSILE_EXPLOSION'],
 
   blockingTypes: ['FOOD', 'DIRT', 'AGENT', 'TURRET', 'MONSTER', 'FARM', 'SPLASH_TURRET', 'STEEL', 'BASE'],
 
   MOVE: {
-    duration: 41 * 6,
-    spriteOrder: [1, 2],
+    duration: 41 * 10,
+    spriteOrder: [1, 2, 3, 4, 5],
     maxFrameOffset: 2,
     frameStep: 2
+  },
+  TURN: {
+    duration: 41 * 15,
+    spriteOrder: [1, 2, 3, 4, 5]
+  },
+  MOVE_TURN: {
+    duration: 41 * 22,
+    spriteOrder: [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
+  },
+  BITE: {
+    duration: 41 * 6,
+    spriteOrder: [6, 7]
+  },
+  DIE: {
+    duration: 41 * 2,
+    spriteOrder: [6]
   },
 
   WANDER: {
@@ -1818,49 +1841,61 @@ var make = function make(game, position, upgradeType) {
     actions: [],
     age: 0,
 
+    task: 'WANDER',
+
     upgradeType: upgradeType,
     timeOnMove: 0 // for turning in place
 
   });
 };
 
-var render = function render(ctx, game, turret) {
-  var position = turret.position,
-      width = turret.width,
-      height = turret.height,
-      theta = turret.theta;
-
-  ctx.save();
-  ctx.translate(position.x, position.y);
-
-  // base of turbine
-  ctx.strokeStyle = "black";
-  ctx.fillStyle = "steelblue";
-  ctx.globalAlpha = 0.1;
-  ctx.fillRect(0, 0, width, height);
-  ctx.strokeRect(0, 0, width, height);
-  ctx.globalAlpha = 1;
-
-  // blades of the turbine
-  for (var i = 0; i < 4; i++) {
-    ctx.save();
-    ctx.fillStyle = "#8B0000";
-    var turbineWidth = 1.5;
-    var turbineHeight = 0.3;
-    ctx.translate(width / 2, height / 2);
-    ctx.rotate(theta + i * Math.PI / 2);
-    ctx.translate(-1 * turbineWidth * 0.75, -turbineHeight / 2);
-    ctx.fillRect(0, 0, turbineWidth, turbineHeight);
-    ctx.restore();
-  }
-
-  ctx.restore();
+var render = function render(ctx, game, agent) {
+  renderAgent(ctx, game, agent, spriteRenderFn);
 };
+
+var spriteRenderFn = function spriteRenderFn(ctx, game, ant) {
+  var sprite = getSpiderSprite(game, ant);
+  if (sprite.img != null) {
+    ctx.drawImage(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height, 0, 0, ant.width, ant.height);
+  }
+};
+
+// const render = (ctx, game, turret): void => {
+//   const {position, width, height, theta} = turret;
+//   ctx.save();
+//   ctx.translate(
+//     position.x, position.y,
+//   );
+//
+//   // base of turbine
+//   ctx.strokeStyle = "black";
+//   ctx.fillStyle = "steelblue";
+//   ctx.globalAlpha = 0.1;
+//   ctx.fillRect(0, 0, width, height);
+//   ctx.strokeRect(0, 0, width, height);
+//   ctx.globalAlpha = 1;
+//
+//   // blades of the turbine
+//   for (let i = 0; i < 4; i++) {
+//     ctx.save();
+//     ctx.fillStyle = "#8B0000";
+//     const turbineWidth = 1.5;
+//     const turbineHeight = 0.3;
+//     ctx.translate(width / 2, height / 2);
+//     ctx.rotate(theta + (i * Math.PI / 2));
+//     ctx.translate(-1 * turbineWidth * 0.75, -turbineHeight / 2);
+//     ctx.fillRect(0, 0, turbineWidth, turbineHeight);
+//     ctx.restore();
+//   }
+//
+//   ctx.restore();
+// };
+
 
 module.exports = {
   make: make, render: render, config: config
 };
-},{"../render/renderAgent":23,"../utils/vectors":36,"./makeEntity.js":11}],21:[function(require,module,exports){
+},{"../render/renderAgent":23,"../selectors/sprites":29,"../utils/vectors":36,"./makeEntity.js":11}],21:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -3373,7 +3408,7 @@ var areNeighbors = function areNeighbors(game, entityA, entityB) {
   if (entityA == null || entityB == null) return false;
   var aNeighbors = getNeighborEntities(game, entityA, true);
   return aNeighbors.filter(function (e) {
-    return e.id === entityB.id;
+    return e != null && e.id === entityB.id;
   }).length > 0;
 };
 
@@ -4212,6 +4247,27 @@ var getBeetleSprite = function getBeetleSprite(game, beetle) {
   return obj;
 };
 
+var getSpiderSprite = function getSpiderSprite(game, spider) {
+  var config = game.config;
+  var width = 36;
+  var height = 36;
+  var obj = {
+    img: game.sprites.SPIDER,
+    x: 0, y: 0,
+    width: width, height: height
+  };
+  var index = getInterpolatedIndex(game, spider);
+  if (spider.type == 'DEAD_SPIDER') {
+    index = 8;
+    obj.x = index * width;
+  } else if (spider.actions.length == 0) {
+    return obj;
+  } else {
+    obj.x = getFrame(game, spider, index) * width;
+  }
+  return obj;
+};
+
 module.exports = {
   getInterpolatedPos: getInterpolatedPos,
   getInterpolatedTheta: getInterpolatedTheta,
@@ -4227,7 +4283,8 @@ module.exports = {
   getSegmentSprite: getSegmentSprite,
   getSegmentHead: getSegmentHead,
   getSegmentTail: getSegmentTail,
-  getBeetleSprite: getBeetleSprite
+  getBeetleSprite: getBeetleSprite,
+  getSpiderSprite: getSpiderSprite
 };
 },{"../config":1,"../selectors/misc":26,"../selectors/neighbors":27,"../simulation/actionQueue":30,"../utils/gridHelpers":33,"../utils/helpers":34,"../utils/vectors":36}],30:[function(require,module,exports){
 'use strict';

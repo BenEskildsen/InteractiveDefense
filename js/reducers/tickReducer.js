@@ -104,6 +104,12 @@ const doTick = (game: Game): Game => {
       PHEROMONE_EMITTER: game.PHEROMONE_EMITTER || {},
       TURBINE: game.TURBINE || [],
     });
+
+    game.ticker = {
+      message: 'Tap to aim',
+      time: 3000,
+      max: 3000,
+    };
   }
 
   // game/frame timing
@@ -251,7 +257,11 @@ const updateBallistics = (game): void => {
               message: 'BASE HIT',
             };
           }
-          dealDamageToEntity(game, e, ballistic.damage);
+          let damage = ballistic.damage;
+          if (game.upgrades.DAMAGE) {
+            damage += game.upgrades.DAMAGE * 5;
+          }
+          dealDamageToEntity(game, e, damage);
         });
 
 
@@ -367,7 +377,7 @@ const updateTowers = (game): void => {
     let shouldShoot = false;
     let maxThetaSpeed = config.maxThetaSpeed;
     if (game.upgrades.TURN_RATE) {
-      maxThetaSpeed += 0.1 * game.upgrades.TURN_RATE;
+      maxThetaSpeed += 0.02 * game.upgrades.TURN_RATE;
     }
     if (Math.abs(tower.theta - targetTheta) <= maxThetaSpeed) {
       tower.theta = targetTheta;
@@ -437,7 +447,7 @@ const updateTowers = (game): void => {
           action.duration /= 3;
         }
         if (projectileType == 'BULLET' && game.upgrades.FIRE_RATE) {
-          action.duration /= (1 + (game.upgrades.FIRE_RATE / 2));
+          action.duration /= (1 + (game.upgrades.FIRE_RATE));
         }
         queueAction(
           game, tower, action,
@@ -464,7 +474,7 @@ const updateBases = (game: Game): void => {
 };
 
 const updateFarms = (game: Game): void => {
-  for (const id of game.UPGRADE) {
+  for (const id of game.FARM) {
     const farm = game.entities[id];
     farm.theta += farm.maxThetaSpeed;
     farm.theta = farm.theta % (2 * Math.PI);

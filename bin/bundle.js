@@ -9,8 +9,8 @@ var config = {
   canvasWidth: 1000,
   canvasHeight: 800,
 
-  viewWidth: 21,
-  viewHeight: 36,
+  viewWidth: 25,
+  viewHeight: 50,
   useFullScreen: true,
   cellWidth: 20,
   cellHeight: 16,
@@ -47,6 +47,7 @@ var config = {
     'ANT': './img/Ant2.png',
     'WORM': './img/Worm1.png',
     'BEETLE': './img/Beetle1.png',
+    'SPIDER': './img/Spider2.png',
 
     'FLOOR_TILE': './img/FloorTile1.png',
     'SKYLINE': './img/Skyline1.png'
@@ -908,8 +909,8 @@ var config = {
   hp: 10,
   width: 1,
   height: 1,
-  explosionRadius: 5,
-  damage: 40,
+  explosionRadius: 6,
+  damage: 50,
   timer: 1,
   age: 0,
   name: 'Bomb',
@@ -1172,11 +1173,11 @@ var _require3 = require('../render/renderAgent'),
     renderAgent = _require3.renderAgent;
 
 var config = {
-  maxHP: 20, // hack to prevent circular reference with render Agent
-  hp: 20,
+  maxHP: 25, // hack to prevent circular reference with render Agent
+  hp: 25,
   damage: 1,
-  width: 1,
-  height: 1,
+  width: 2,
+  height: 2,
   maxHold: 1,
   age: 0,
 
@@ -1779,24 +1780,46 @@ var _require2 = require('../utils/vectors'),
 var _require3 = require('../render/renderAgent'),
     renderAgent = _require3.renderAgent;
 
+var _require4 = require('../selectors/sprites'),
+    getSpiderSprite = _require4.getSpiderSprite;
+
 var config = {
-  hp: 5,
-  width: 2,
-  height: 2,
+  hp: 100,
+  maxHP: 100,
+  damage: 1,
+  width: 4,
+  height: 4,
   maxThetaSpeed: 0.05,
   // cost: 100,
   name: 'Upgrade',
   AGENT: true,
 
-  upgradeTypes: ['FIRE_RATE', 'TURN_RATE'],
+  upgradeTypes: ['FIRE_RATE', 'TURN_RATE', // 'TRIPLE_SHOT',
+  'DAMAGE', 'MONEY', 'MISSILE_EXPLOSION'],
 
   blockingTypes: ['FOOD', 'DIRT', 'AGENT', 'TURRET', 'MONSTER', 'FARM', 'SPLASH_TURRET', 'STEEL', 'BASE'],
 
   MOVE: {
-    duration: 41 * 6,
-    spriteOrder: [1, 2],
+    duration: 41 * 10,
+    spriteOrder: [1, 2, 3, 4, 5],
     maxFrameOffset: 2,
     frameStep: 2
+  },
+  TURN: {
+    duration: 41 * 15,
+    spriteOrder: [1, 2, 3, 4, 5]
+  },
+  MOVE_TURN: {
+    duration: 41 * 22,
+    spriteOrder: [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
+  },
+  BITE: {
+    duration: 41 * 6,
+    spriteOrder: [6, 7]
+  },
+  DIE: {
+    duration: 41 * 2,
+    spriteOrder: [6]
   },
 
   WANDER: {
@@ -1818,49 +1841,61 @@ var make = function make(game, position, upgradeType) {
     actions: [],
     age: 0,
 
+    task: 'WANDER',
+
     upgradeType: upgradeType,
     timeOnMove: 0 // for turning in place
 
   });
 };
 
-var render = function render(ctx, game, turret) {
-  var position = turret.position,
-      width = turret.width,
-      height = turret.height,
-      theta = turret.theta;
-
-  ctx.save();
-  ctx.translate(position.x, position.y);
-
-  // base of turbine
-  ctx.strokeStyle = "black";
-  ctx.fillStyle = "steelblue";
-  ctx.globalAlpha = 0.1;
-  ctx.fillRect(0, 0, width, height);
-  ctx.strokeRect(0, 0, width, height);
-  ctx.globalAlpha = 1;
-
-  // blades of the turbine
-  for (var i = 0; i < 4; i++) {
-    ctx.save();
-    ctx.fillStyle = "#8B0000";
-    var turbineWidth = 1.5;
-    var turbineHeight = 0.3;
-    ctx.translate(width / 2, height / 2);
-    ctx.rotate(theta + i * Math.PI / 2);
-    ctx.translate(-1 * turbineWidth * 0.75, -turbineHeight / 2);
-    ctx.fillRect(0, 0, turbineWidth, turbineHeight);
-    ctx.restore();
-  }
-
-  ctx.restore();
+var render = function render(ctx, game, agent) {
+  renderAgent(ctx, game, agent, spriteRenderFn);
 };
+
+var spriteRenderFn = function spriteRenderFn(ctx, game, ant) {
+  var sprite = getSpiderSprite(game, ant);
+  if (sprite.img != null) {
+    ctx.drawImage(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height, 0, 0, ant.width, ant.height);
+  }
+};
+
+// const render = (ctx, game, turret): void => {
+//   const {position, width, height, theta} = turret;
+//   ctx.save();
+//   ctx.translate(
+//     position.x, position.y,
+//   );
+//
+//   // base of turbine
+//   ctx.strokeStyle = "black";
+//   ctx.fillStyle = "steelblue";
+//   ctx.globalAlpha = 0.1;
+//   ctx.fillRect(0, 0, width, height);
+//   ctx.strokeRect(0, 0, width, height);
+//   ctx.globalAlpha = 1;
+//
+//   // blades of the turbine
+//   for (let i = 0; i < 4; i++) {
+//     ctx.save();
+//     ctx.fillStyle = "#8B0000";
+//     const turbineWidth = 1.5;
+//     const turbineHeight = 0.3;
+//     ctx.translate(width / 2, height / 2);
+//     ctx.rotate(theta + (i * Math.PI / 2));
+//     ctx.translate(-1 * turbineWidth * 0.75, -turbineHeight / 2);
+//     ctx.fillRect(0, 0, turbineWidth, turbineHeight);
+//     ctx.restore();
+//   }
+//
+//   ctx.restore();
+// };
+
 
 module.exports = {
   make: make, render: render, config: config
 };
-},{"../render/renderAgent":39,"../utils/vectors":101,"./makeEntity.js":11}],21:[function(require,module,exports){
+},{"../render/renderAgent":39,"../selectors/sprites":49,"../utils/vectors":101,"./makeEntity.js":11}],21:[function(require,module,exports){
 'use strict';
 
 var _require = require('redux'),
@@ -1912,7 +1947,7 @@ module.exports = {"numPlayers":2,"gridWidth":50,"gridHeight":50,"upgrades":[],"a
 },{}],26:[function(require,module,exports){
 module.exports = {"numPlayers":3,"gridWidth":50,"gridHeight":50,"upgrades":[],"actions":[{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":0,"y":31},"width":1,"height":19},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":1,"y":42},"width":50,"height":8},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":49,"y":32},"width":1,"height":10},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"TOKEN","rect":{"position":{"x":24,"y":37},"width":1,"height":1},"args":[0,"HEAT"]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":18,"y":33},"width":1,"height":9},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":22,"y":31},"width":1,"height":4},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":22,"y":35},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":23,"y":30},"width":1,"height":4},"args":[1,1]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":22,"y":31},"width":1,"height":4}},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":23,"y":34},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":24,"y":29},"width":1,"height":5},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":25,"y":23},"width":1,"height":7},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":26,"y":20},"width":1,"height":4},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":27,"y":20},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":28,"y":19},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":29,"y":18},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":30,"y":32},"width":1,"height":10},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":27,"y":21},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":27,"y":22},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":28,"y":20},"width":2,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":28,"y":21},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":30,"y":19},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":31,"y":18},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":32,"y":17},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":33,"y":16},"width":1,"height":1},"args":[1,1]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":29,"y":18},"width":1,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":28,"y":19},"width":1,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":28,"y":20},"width":1,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":27,"y":20},"width":1,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":26,"y":20},"width":1,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":26,"y":21},"width":1,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":27,"y":21},"width":1,"height":1}},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":27,"y":21},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":28,"y":20},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":29,"y":19},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":30,"y":13},"width":1,"height":6},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":30,"y":12},"width":7,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":34,"y":15},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":20,"y":15},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":19,"y":14},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":18,"y":13},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":18,"y":14},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":20,"y":17},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":19,"y":16},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":18,"y":15},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":17,"y":15},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":16,"y":14},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":14,"y":14},"width":2,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":19,"y":15},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":20,"y":16},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":49,"y":29},"width":1,"height":3},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":48,"y":29},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":49,"y":26},"width":1,"height":4},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":47,"y":29},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":46,"y":29},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":45,"y":29},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":44,"y":28},"width":1,"height":2},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":43,"y":29},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":43,"y":29},"width":1,"height":2},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":42,"y":30},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":41,"y":31},"width":2,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":40,"y":31},"width":1,"height":3},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":39,"y":33},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":38,"y":34},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":37,"y":35},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":34,"y":35},"width":3,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":21,"y":17},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":21,"y":18},"width":3,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":24,"y":18},"width":1,"height":2},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":24,"y":20},"width":1,"height":4},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":17,"y":14},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":13,"y":14},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":12,"y":14},"width":1,"height":1},"args":[1,1]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":31,"y":18},"width":1,"height":1}},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":33,"y":16},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":34,"y":16},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":33,"y":17},"width":1,"height":1},"args":[1,1]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":32,"y":15},"width":3,"height":3}},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":32,"y":15},"width":1,"height":2},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":32,"y":14},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":32,"y":17},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":33,"y":15},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":33,"y":16},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":34,"y":16},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":33,"y":17},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":34,"y":17},"width":1,"height":1},"args":[1,1]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":32,"y":14},"width":1,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":33,"y":15},"width":1,"height":1}},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":35,"y":17},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":23,"y":19},"width":1,"height":1},"args":[1,1]},{"type":"FILL_PHEROMONE","gridPos":{"x":25,"y":22},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":25,"y":21},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":26,"y":21},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":25,"y":20},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":26,"y":20},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":27,"y":20},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":25,"y":19},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":26,"y":19},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":27,"y":19},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":28,"y":19},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":25,"y":18},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":26,"y":18},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":27,"y":18},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":28,"y":18},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":29,"y":18},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":22,"y":17},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":23,"y":17},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":24,"y":17},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":25,"y":17},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":26,"y":17},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":27,"y":17},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":28,"y":17},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":29,"y":17},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":21,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":22,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":23,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":24,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":25,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":26,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":27,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":27,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":28,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":29,"y":16},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":21,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":22,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":23,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":24,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":25,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":25,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":26,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":27,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":28,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":29,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"FILL_PHEROMONE","gridPos":{"x":29,"y":15},"pheromoneType":"WATER","playerID":0,"quantity":120},{"type":"DELETE_ENTITIES","rect":{"position":{"x":24,"y":38},"width":1,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":24,"y":37},"width":1,"height":1}},{"type":"CREATE_ENTITIES","entityType":"TOKEN","rect":{"position":{"x":24,"y":41},"width":1,"height":1},"args":[0,"HEAT"]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":24,"y":22},"width":1,"height":2}},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":37,"y":12},"width":2,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":38,"y":13},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":11,"y":14},"width":1,"height":2},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":11,"y":16},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":38,"y":14},"width":1,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":24,"y":22},"width":1,"height":2},"args":[1,1]}]};
 },{}],27:[function(require,module,exports){
-module.exports = {"numPlayers":3,"gridWidth":21,"gridHeight":36,"upgrades":[],"actions":[{"type":"CREATE_ENTITIES","entityType":"BASE","rect":{"position":{"x":9,"y":16},"width":1,"height":1},"args":[1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":3,"y":4},"width":15,"height":29},"args":[1,1]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":6,"y":7},"width":9,"height":9}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":6,"y":16},"width":3,"height":4}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":12,"y":16},"width":3,"height":4}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":6,"y":19},"width":9,"height":11}},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":6,"y":29},"width":9,"height":1},"args":[1,1]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":3,"y":32},"width":15,"height":1}}]};
+module.exports = {"numPlayers":3,"gridWidth":25,"gridHeight":50,"upgrades":[],"actions":[{"type":"CREATE_ENTITIES","entityType":"BASE","rect":{"position":{"x":11,"y":22},"width":1,"height":1},"args":["1"]},{"type":"CREATE_ENTITIES","entityType":"BASIC_TURRET","rect":{"position":{"x":14,"y":20},"width":1,"height":1},"args":["1"]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":7,"y":10},"width":1,"height":3},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":8,"y":10},"width":2,"height":1},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":7,"y":31},"width":1,"height":3},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":8,"y":33},"width":2,"height":1},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":16,"y":19},"width":1,"height":8},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":9,"y":18},"width":8,"height":1},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":8,"y":18},"width":1,"height":9},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":8,"y":27},"width":9,"height":1},"args":["STONE",1,1]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":7,"y":9},"width":4,"height":5}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":7,"y":31},"width":3,"height":3}},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":4,"y":36},"width":17,"height":3},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":19,"y":8},"width":3,"height":31},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":4,"y":7},"width":18,"height":3},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":3,"y":7},"width":2,"height":32},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":5,"y":10},"width":1,"height":26},"args":[1,1]},{"type":"DELETE_ENTITIES","rect":{"position":{"x":8,"y":18},"width":1,"height":10}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":8,"y":27},"width":9,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":16,"y":18},"width":1,"height":10}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":8,"y":18},"width":9,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":14,"y":20},"width":1,"height":1}},{"type":"DELETE_ENTITIES","rect":{"position":{"x":30,"y":21},"width":1,"height":1}}]};
 },{}],28:[function(require,module,exports){
 module.exports = {"numPlayers":1,"gridWidth":25,"gridHeight":25,"upgrades":[],"actions":[{"type":"CREATE_ENTITIES","entityType":"AGENT","rect":{"position":{"x":5,"y":13},"width":1,"height":1},"args":[1,null]},{"type":"CREATE_ENTITIES","entityType":"WORM","rect":{"position":{"x":13,"y":14},"width":1,"height":1},"args":[[{"x":13,"y":15},{"x":13,"y":16},{"x":14,"y":16},{"x":15,"y":16},{"x":15,"y":17},{"x":16,"y":17},{"x":16,"y":18}],1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":0,"y":16},"width":1,"height":9},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":20,"y":24},"width":1,"height":1},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":1,"y":24},"width":19,"height":1},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":10,"y":22},"width":1,"height":3},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":20,"y":19},"width":1,"height":5},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"STONE","rect":{"position":{"x":21,"y":24},"width":5,"height":1},"args":["STONE",1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":4,"y":2},"width":5,"height":4},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":9,"y":1},"width":1,"height":3},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DIRT","rect":{"position":{"x":21,"y":9},"width":3,"height":3},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"FOOD","rect":{"position":{"x":6,"y":8},"width":2,"height":3},"args":[1,1]},{"type":"CREATE_ENTITIES","entityType":"DOODAD","rect":{"position":{"x":18,"y":2},"width":3,"height":4},"args":[3,4,"QUESTION"]},{"type":"CREATE_ENTITIES","entityType":"BACKGROUND","rect":{"position":{"x":14,"y":0},"width":2,"height":2},"args":[1,1,"FLOOR_TILE"]}]};
 },{}],29:[function(require,module,exports){
@@ -3364,6 +3399,12 @@ var doTick = function doTick(game) {
       PHEROMONE_EMITTER: game.PHEROMONE_EMITTER || {},
       TURBINE: game.TURBINE || []
     });
+
+    game.ticker = {
+      message: 'Tap to aim',
+      time: 3000,
+      max: 3000
+    };
   }
 
   // game/frame timing
@@ -3521,7 +3562,11 @@ var updateBallistics = function updateBallistics(game) {
               message: 'BASE HIT'
             };
           }
-          dealDamageToEntity(game, e, ballistic.damage);
+          var damage = ballistic.damage;
+          if (game.upgrades.DAMAGE) {
+            damage += game.upgrades.DAMAGE * 5;
+          }
+          dealDamageToEntity(game, e, damage);
         });
 
         if (!ballistic.PIERCING || ballistic.hp <= 0) {
@@ -3636,9 +3681,9 @@ var updateTowers = function updateTowers(game) {
     var shouldShoot = false;
     var maxThetaSpeed = config.maxThetaSpeed;
     if (game.upgrades.TURN_RATE) {
-      maxThetaSpeed += 0.1 * game.upgrades.TURN_RATE;
+      maxThetaSpeed += 0.02 * game.upgrades.TURN_RATE;
     }
-    if (Math.abs(tower.theta - targetTheta) <= tower.maxThetaSpeed) {
+    if (Math.abs(tower.theta - targetTheta) <= maxThetaSpeed) {
       tower.theta = targetTheta;
       shouldShoot = true;
     } else if (tower.theta < targetTheta && targetTheta - tower.theta < Math.PI || tower.theta > targetTheta && tower.theta - targetTheta > Math.PI) {
@@ -3695,7 +3740,7 @@ var updateTowers = function updateTowers(game) {
           action.duration /= 3;
         }
         if (projectileType == 'BULLET' && game.upgrades.FIRE_RATE) {
-          action.duration /= 1 + game.upgrades.FIRE_RATE / 2;
+          action.duration /= 1 + game.upgrades.FIRE_RATE;
         }
         queueAction(game, tower, action);
         didShoot = true;
@@ -3745,7 +3790,7 @@ var updateFarms = function updateFarms(game) {
   var _iteratorError3 = undefined;
 
   try {
-    for (var _iterator3 = game.UPGRADE[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+    for (var _iterator3 = game.FARM[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
       var id = _step3.value;
 
       var farm = game.entities[id];
@@ -5918,7 +5963,7 @@ var areNeighbors = function areNeighbors(game, entityA, entityB) {
   if (entityA == null || entityB == null) return false;
   var aNeighbors = getNeighborEntities(game, entityA, true);
   return aNeighbors.filter(function (e) {
-    return e.id === entityB.id;
+    return e != null && e.id === entityB.id;
   }).length > 0;
 };
 
@@ -6757,6 +6802,27 @@ var getBeetleSprite = function getBeetleSprite(game, beetle) {
   return obj;
 };
 
+var getSpiderSprite = function getSpiderSprite(game, spider) {
+  var config = game.config;
+  var width = 36;
+  var height = 36;
+  var obj = {
+    img: game.sprites.SPIDER,
+    x: 0, y: 0,
+    width: width, height: height
+  };
+  var index = getInterpolatedIndex(game, spider);
+  if (spider.type == 'DEAD_SPIDER') {
+    index = 8;
+    obj.x = index * width;
+  } else if (spider.actions.length == 0) {
+    return obj;
+  } else {
+    obj.x = getFrame(game, spider, index) * width;
+  }
+  return obj;
+};
+
 module.exports = {
   getInterpolatedPos: getInterpolatedPos,
   getInterpolatedTheta: getInterpolatedTheta,
@@ -6772,7 +6838,8 @@ module.exports = {
   getSegmentSprite: getSegmentSprite,
   getSegmentHead: getSegmentHead,
   getSegmentTail: getSegmentTail,
-  getBeetleSprite: getBeetleSprite
+  getBeetleSprite: getBeetleSprite,
+  getSpiderSprite: getSpiderSprite
 };
 },{"../config":1,"../selectors/misc":45,"../selectors/neighbors":47,"../simulation/actionQueue":51,"../utils/gridHelpers":97,"../utils/helpers":98,"../utils/vectors":101}],50:[function(require,module,exports){
 'use strict';
@@ -7043,7 +7110,7 @@ var entityDie = function entityDie(game, entity) {
   }
 
   if (entity.type == 'MONSTER') {
-    game.money += 1 + game.FARM.length;
+    game.money += 1 + game.FARM.length + (game.upgrades.MONEY || 0);
     game.score += 1;
   }
 
@@ -7689,6 +7756,7 @@ var agentDecideAction = function agentDecideAction(game, agent) {
   switch (agent.type) {
     case 'AGENT':
     case 'MONSTER':
+    case 'UPGRADE':
       monsterDecideAction(game, agent);
       break;
     case 'WORM':
@@ -7709,7 +7777,7 @@ var monsterDecideAction = function monsterDecideAction(game, ant) {
     if (isDiagonalMove(ant.position, e.position)) return false;
     return e.type == 'BASE' || e.type == 'TURRET' || e.type == 'FARM' ||
     // only attack dirt/stone when path is blocked
-    !hasPathToColony && (e.type == 'DIRT' || e.type == 'STONE');
+    (!hasPathToColony || Math.random() < 0.33) && (e.type == 'DIRT' || e.type == 'STONE');
   });
 
   if (targets.length > 0) {
@@ -8511,7 +8579,11 @@ var _require6 = require('../simulation/miscOperations'),
 var triggerExplosion = function triggerExplosion(game, explosive, precompute) {
   if (explosive == null) return;
   var quadrantThetas = [0, Math.PI / 2, Math.PI, 3 * Math.PI / 2];
-  var numRays = explosive.explosionRadius;
+  var explosionRadius = explosive.explosionRadius;
+  if (game.upgrades.MISSILE_EXPLOSION) {
+    explosionRadius += game.upgrades.MISSILE_EXPLOSION;
+  }
+  var numRays = explosionRadius;
   if (explosive.explosionRadiusType == 'HORIZONTAL') {
     quadrantThetas = [0, Math.PI];
     numRays = 1;
@@ -8532,9 +8604,9 @@ var triggerExplosion = function triggerExplosion(game, explosive, precompute) {
 
       var _loop = function _loop(i) {
         var damage = explosive.damage;
-        var radius = explosive.explosionRadius;
+        var radius = explosionRadius;
         for (var r = 1; r <= radius && damage > 0; r++) {
-          var position = add(explosive.position, makeVector(quadrant + i / explosive.explosionRadius * (Math.PI / 2), r));
+          var position = add(explosive.position, makeVector(quadrant + i / explosionRadius * (Math.PI / 2), r));
           var dealtDamage = false;
           lookupInGrid(game.grid, round(position)).map(function (id) {
             return game.entities[id];
@@ -9515,7 +9587,7 @@ var initMonsterAttackSystem = function initMonsterAttackSystem(store) {
 
     var gameSeconds = game.totalGameTime / 1000;
 
-    var spawnRate = Math.max(5, Math.round(150 - game.score));
+    var spawnRate = Math.max(5, Math.round(160 - game.score));
 
     if (game.time > 0 && game.time % spawnRate == 0) {
       var position = { x: 0, y: 0 };
@@ -9529,7 +9601,10 @@ var initMonsterAttackSystem = function initMonsterAttackSystem(store) {
       var monster = Entities.MONSTER.make(game, position, 2);
       dispatch({ type: 'CREATE_ENTITY', entity: monster });
 
-      if (Math.random() < 0.1) {
+      if (game.time > 500 && Math.random() < 0.1 && game.UPGRADE.length == 0) {
+        // always come from the bottom so you don't get stuck
+        position.x = randomIn(0, game.gridWidth - 4);
+        position.y = game.gridHeight - 4;
         var upgrade = Entities.UPGRADE.make(game, position, oneOf(Entities.UPGRADE.config.upgradeTypes));
         dispatch({ type: 'CREATE_ENTITY', entity: upgrade });
       }
@@ -11301,8 +11376,9 @@ function Ticker(props) {
       style: {
         position: 'absolute',
         top: 100,
-        left: 120,
-        opacity: shouldUseIndex ? index : 1,
+        left: 0,
+        width: '100%',
+        // opacity: shouldUseIndex ? index : 1,
         pointerEvents: 'none',
         textShadow: '-1px -1px 0 #FFF, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff'
       }

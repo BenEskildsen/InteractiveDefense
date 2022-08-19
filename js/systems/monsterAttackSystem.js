@@ -20,7 +20,7 @@ const initMonsterAttackSystem = (store) => {
 
     const gameSeconds = game.totalGameTime / 1000;
 
-    let spawnRate = Math.max(5, Math.round(150 - game.score));
+    let spawnRate = Math.max(5, Math.round(160 - game.score));
 
     if (game.time > 0 && game.time % spawnRate == 0) {
       let position = {x: 0, y: 0};
@@ -34,7 +34,10 @@ const initMonsterAttackSystem = (store) => {
       const monster = Entities.MONSTER.make(game, position, 2);
       dispatch({type: 'CREATE_ENTITY', entity: monster});
 
-      if (Math.random() < 0.1) {
+      if (game.time > 500 && Math.random() < 0.1 && game.UPGRADE.length == 0) {
+        // always come from the bottom so you don't get stuck
+        position.x = randomIn(0, game.gridWidth - 4);
+        position.y = game.gridHeight - 4;
         const upgrade = Entities.UPGRADE.make(
           game, position, oneOf(Entities.UPGRADE.config.upgradeTypes),
         );

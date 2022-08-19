@@ -234,7 +234,7 @@ const entityDie = (game: Game, entity: Entity): void => {
   }
 
   if (entity.type == 'MONSTER') {
-    game.money += 1 + game.FARM.length;
+    game.money += 1 + game.FARM.length + (game.upgrades.MONEY || 0);
     game.score += 1;
   }
 

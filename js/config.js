@@ -6,8 +6,8 @@ const config = {
   canvasWidth: 1000,
   canvasHeight: 800,
 
-  viewWidth: 21,
-  viewHeight: 36,
+  viewWidth: 25,
+  viewHeight: 50,
   useFullScreen: true,
   cellWidth: 20,
   cellHeight: 16,
@@ -46,6 +46,7 @@ const config = {
     'ANT': './img/Ant2.png',
     'WORM': './img/Worm1.png',
     'BEETLE': './img/Beetle1.png',
+    'SPIDER': './img/Spider2.png',
 
     'FLOOR_TILE': './img/FloorTile1.png',
     'SKYLINE': './img/Skyline1.png',

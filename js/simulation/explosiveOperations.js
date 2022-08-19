@@ -28,7 +28,11 @@ const {dealDamageToEntity} = require('../simulation/miscOperations');
 const triggerExplosion = (game, explosive, precompute): Array<Vector> => {
   if (explosive == null) return;
   let quadrantThetas = [0, Math.PI/2, Math.PI, 3 * Math.PI /2];
-  let numRays = explosive.explosionRadius;
+  let explosionRadius = explosive.explosionRadius;
+  if (game.upgrades.MISSILE_EXPLOSION) {
+    explosionRadius += game.upgrades.MISSILE_EXPLOSION;
+  }
+  let numRays = explosionRadius;
   if (explosive.explosionRadiusType == 'HORIZONTAL') {
     quadrantThetas = [0, Math.PI];
     numRays = 1;
@@ -42,11 +46,11 @@ const triggerExplosion = (game, explosive, precompute): Array<Vector> => {
   for (const quadrant of quadrantThetas) {
     for (let i = 0; i < numRays; i++) {
       let damage = explosive.damage;
-      const radius = explosive.explosionRadius;
+      const radius = explosionRadius;
       for (let r = 1; r <= radius && damage > 0; r++) {
         const position = add(
           explosive.position,
-          makeVector(quadrant + (i/explosive.explosionRadius) * (Math.PI / 2), r),
+          makeVector(quadrant + (i/explosionRadius) * (Math.PI / 2), r),
         );
         let dealtDamage = false;
         lookupInGrid(game.grid, round(position))

@@ -3,32 +3,14 @@
   - if you target a missile right next to yourself it shoots to the end
     of the screen but then still blows up next to you
 
-  - queuing dirt
-    - need a way to break out of the queue?
 
 
 - - - - - - GAME MECHANICS - - - - - -
-  - make turret more satisfying to shoot
-    - faster fire rate
-    - recoil
-    - burst fire, crosshair goes away?
-  - separate palette for upgrades
-    - fire rate
-    - bullet damage
-    - turret turn rate
-    - missile radius
-    - fire multiple projectiles in an arc
-  - upgrades:
-    - turn rate doesn't work well
-    - need stronger enemies too
-    - ticker placement needs to be better/readable names
 
 
 - - - - - - - PLAYTESTING - - - - - - - -
   - dragging bullet crosshair is kind of hard to aim
-  - ticker to tell player to tap to aim
   - when a missile collides and hits something, don't move the explosion to targetPos
-  - have enemies attack from only one side at a time at first?
 
 
 - - - - - - REFACTOR - - - - - - - -
@@ -44,6 +26,7 @@
 
 - - - - - - POLISH - - - - - -
   - increase score for number of kills per tick
+  - ticker placement needs to be better/readable upgrade names
   - UI
     - nicer cards for buildings
     - get healthbar to render for turret and base and dirt and stone
@@ -60,3 +43,9 @@
 - - - - - - STRETCH - - - - - -
   - have dead beetle bodies that slowly fade
   - detect sideways screen and rotate grid rendering
+  - make turret more satisfying to shoot
+    - faster fire rate
+    - recoil
+    - burst fire, crosshair goes away?
+  - queuing dirt
+    - need a way to break out of the queue?

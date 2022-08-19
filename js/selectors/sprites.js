@@ -451,6 +451,28 @@ const getBeetleSprite = (game: Game, beetle: Beetle): Object => {
   return obj;
 };
 
+
+const getSpiderSprite = (game: Game, spider: Spider): Object => {
+  const config = game.config;
+  let width = 36;
+  let height = 36;
+  const obj = {
+    img: game.sprites.SPIDER,
+    x: 0, y: 0,
+    width, height,
+  };
+  let index = getInterpolatedIndex(game, spider);
+  if (spider.type == 'DEAD_SPIDER') {
+    index = 8;
+    obj.x = index * width;
+  } else if (spider.actions.length == 0) {
+    return obj;
+  } else {
+    obj.x = getFrame(game, spider, index) * width;
+  }
+  return obj;
+};
+
 module.exports = {
   getInterpolatedPos,
   getInterpolatedTheta,
@@ -467,4 +489,5 @@ module.exports = {
   getSegmentHead,
   getSegmentTail,
   getBeetleSprite,
+  getSpiderSprite,
 }
