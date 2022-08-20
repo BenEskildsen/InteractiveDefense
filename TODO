@@ -1,7 +1,5 @@
 
 - - - - - - - FIX - - - - - - - -
-  - if you target a missile right next to yourself it shoots to the end
-    of the screen but then still blows up next to you
 
 
 
@@ -9,12 +7,11 @@
 
 
 - - - - - - - PLAYTESTING - - - - - - - -
-  - dragging bullet crosshair is kind of hard to aim
-  - when a missile collides and hits something, don't move the explosion to targetPos
+  - can freeze rendering when firing a missile?
+  - unclear that dirt will shoot a missile
 
 
 - - - - - - REFACTOR - - - - - - - -
-  - switch to fullscreen canvas component
   - use ui + utils packages
   - properties
     - add to registry, all named the same way
@@ -25,15 +22,14 @@
 
 
 - - - - - - POLISH - - - - - -
-  - increase score for number of kills per tick
   - ticker placement needs to be better/readable upgrade names
   - UI
     - nicer cards for buildings
+      - rename dirt to wall
     - get healthbar to render for turret and base and dirt and stone
       - maxHP
       - render healthbars for non-agents
       - render location
-  - Remove WASD and scroll (add hotkeys for pause, etc)
   - Remove main menu
   - Reset should pass through lobby again
   - favicon
@@ -41,6 +37,7 @@
 
 
 - - - - - - STRETCH - - - - - -
+  - increase score for number of kills per tick
   - have dead beetle bodies that slowly fade
   - detect sideways screen and rotate grid rendering
   - make turret more satisfying to shoot

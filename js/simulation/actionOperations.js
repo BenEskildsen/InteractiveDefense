@@ -163,7 +163,7 @@ const entityShoot = (game: Game, entity: Entity, payload) => {
       break;
     }
     case 'MISSILE': {
-      const position = round(add(makeVector(theta, -4), entity.position));
+      const position = round(add(makeVector(theta, -1), entity.position));
       projectile = Entities.MISSILE.make(
         game, position, entity.playerID,
         Entities.DYNAMITE.make(game, position, entity.playerID),
@@ -183,7 +183,7 @@ const entityShoot = (game: Game, entity: Entity, payload) => {
       );
     }
     case 'DIRT': {
-      const position = round(add(makeVector(theta, -4), entity.position));
+      const position = round(add(makeVector(theta, -1), entity.position));
       projectile = Entities.MISSILE.make(
         game, position, entity.playerID,
         Entities.DIRT.make(game, position),
@@ -227,7 +227,10 @@ const entityDie = (game: Game, entity: Entity): void => {
 
   if (entity.holding != null) {
     let position = entity.position;
-    if (entity.targetPos != null) {
+    if (
+      entity.targetPos != null &&
+      Math.abs(dist(entity.position, entity.targetPos)) <= 2
+    ) {
       position = entity.targetPos;
     }
     putdownEntity(game, entity.holding, position);

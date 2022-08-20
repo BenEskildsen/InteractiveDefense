@@ -282,6 +282,7 @@ const monsterDecideAction = (game, ant) => {
   // FIGHT again if it didn't move
   const nextTargets = getNeighborEntities(game, ant, true)
     .filter(e => {
+      if (e == null) return false;
       if (e.position == null) return false;
       if (isDiagonalMove(ant.position, e.position)) return false;
       return (

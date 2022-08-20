@@ -57,8 +57,8 @@ const config = {
     forwardMovementBonus: 0,
     prevPositionPenalty: -100,
     FOLLOW: 2,
-    COLONY: 1,
-    PASS_THROUGH_COLONY: 1,
+    COLONY: 2,
+    PASS_THROUGH_COLONY: 2,
   },
 };
 

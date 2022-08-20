@@ -29,12 +29,7 @@ function LevelEditor(props: Props): React.Node {
   const {game} = state;
 
   // position level editor to the right of the canvas
-  const canvasDiv = document.getElementById('canvasWrapper');
-  let left = 0;
-  if (canvasDiv != null) {
-    const rect = canvasDiv.getBoundingClientRect();
-    left = rect.left + rect.width + 4;
-  }
+  let left = window.innerWidth - 500;
 
   // editor state:
   const [editor, setEditor] = useState({

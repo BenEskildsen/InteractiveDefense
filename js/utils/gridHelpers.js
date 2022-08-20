@@ -5,6 +5,9 @@ const {thetaToDir} = require('../utils/helpers');
 const {
   add, multiply, subtract, equals, floor, containsVector
 } = require('../utils/vectors');
+const {
+  getCanvasSize,
+} = require('../selectors/canvas');
 
 import type {Grid, Game, Vector, EntityID, PheromoneType} from '../types';
 
@@ -83,23 +86,6 @@ const deleteFromCell = (grid: Grid, position: Vector, entityID: EntityID): boole
   return oldLength != grid[x][y].entities.length;
 }
 
-const canvasToGrid = (game: GameState, canvasPos: Vector): Vector => {
-  const config = globalConfig.config;
-  const scaleVec = {
-    x: game.viewWidth / window.innerWidth,
-    y: game.viewHeight / window.innerHeight,
-  };
-
-  const gridCoord = floor(
-    add(
-      {x: game.viewPos.x, y: game.viewPos.y},
-      multiply(canvasPos, scaleVec)
-    )
-  );
-  return floor(gridCoord);
-};
-
-
 const getEntityPositions = (game: Game, entity: Entity): Array<Vector> => {
   if (entity.segmented) {
     return [entity.position, ...(entity.segments.map(s => s.position))];
@@ -127,7 +113,6 @@ module.exports = {
   insertInCell,
   deleteFromCell,
   getPheromonesInCell,
-  canvasToGrid,
   getEntityPositions,
   entityInsideGrid,
 };

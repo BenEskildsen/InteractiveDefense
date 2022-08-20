@@ -4,7 +4,8 @@ const {config} = require('../config');
 const {
   add, subtract, equals, makeVector, vectorTheta, multiply, floor,
 } = require('../utils/vectors');
-const {canvasToGrid, lookupInGrid} = require('../utils/gridHelpers');
+const {lookupInGrid} = require('../utils/gridHelpers');
+const {canvasToGrid} = require('../selectors/canvas');
 const {throttle} = require('../utils/helpers');
 
 const initMouseControlsSystem = (store, handlers) => {

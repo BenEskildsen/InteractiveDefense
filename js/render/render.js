@@ -10,6 +10,9 @@ const {
   onScreen, getPositionsInFront,
   getControlledEntityInteraction,
 } = require('../selectors/misc');
+const {
+  getCanvasSize,
+} = require('../selectors/canvas');
 const globalConfig = require('../config');
 const {
   getInterpolatedPos, getSpriteAndOffset, getInterpolatedTheta,
@@ -57,14 +60,15 @@ const renderFrame = (game: Game): void => {
   ctx = canvas.getContext('2d');
   if (!ctx) return;
   ctx.fillStyle = 'black';
-  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+  const {width: canvasWidth, height: canvasHeight} = getCanvasSize();
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-  const pxWidth = window.innerWidth / 4;
+  const pxWidth = canvasWidth / 4;
   const pxHeight = 0.6 * pxWidth;
   if (!game.maxMinimap) {
     const bigDims = {
-      pxWidth: window.innerWidth,
-      pxHeight: window.innerHeight,
+      pxWidth: canvasWidth,
+      pxHeight: canvasHeight,
       viewWidth: game.viewWidth,
       viewHeight: game.viewHeight,
       viewPos: {...game.viewPos},
@@ -83,8 +87,8 @@ const renderFrame = (game: Game): void => {
     renderView(canvas, ctx, game, bigDims);
     ctx.save();
     ctx.translate(
-      window.innerWidth - pxWidth - 8,
-      window.innerHeight - pxHeight - 8,
+      canvasWidth - pxWidth - 8,
+      canvasHeight - pxHeight - 8,
     );
     // renderMinimap(ctx, game, miniDims);
     ctx.restore();
@@ -94,8 +98,8 @@ const renderFrame = (game: Game): void => {
       y: game.viewPos.y - game.viewHeight / 2,
     };
     const bigDims = {
-      pxWidth: window.innerWidth,
-      pxHeight: window.innerHeight,
+      pxWidth: canvasWidth,
+      pxHeight: canvasHeight,
       viewWidth: game.viewWidth * 3,
       viewHeight: game.viewHeight * 3,
       viewPos: {
@@ -113,7 +117,7 @@ const renderFrame = (game: Game): void => {
     // renderMinimap(ctx, game, bigDims);
     ctx.save();
     ctx.translate(
-      window.innerWidth - pxWidth - 8,
+      canvasWidth - pxWidth - 8,
       8,
     );
     ctx.globalAlpha = 0.8;
@@ -182,7 +186,7 @@ const renderView = (canvas, ctx2d, game, dims, isMini): void => {
   }
 
   // animated things go on top of image:
-  renderPheromones(ctx, game);
+  // renderPheromones(ctx, game);
   for (const entityType in Entities) {
     for (const id of game[entityType]) {
       const entity = game.entities[id];

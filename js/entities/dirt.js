@@ -10,7 +10,7 @@ const config = {
   TILED: true,
   COLLECTABLE: true,
   cost: 1,
-  hp: 10,
+  hp: 12,
   // name: 'Dirt',
 
   isExplosionImmune: true,

@@ -2,7 +2,6 @@
 
 const React = require('react');
 const Button = require('./Components/Button.react');
-// const Canvas = require('./Canvas.react');
 const {Canvas} = require('bens_ui_components');
 const Checkbox = require('./Components/Checkbox.react');
 const RadioPicker = require('./Components/RadioPicker.react');
@@ -28,6 +27,9 @@ const {
   getControlledEntityInteraction,
   getManningAction,
 } = require('../selectors/misc');
+const {
+  getCanvasSize,
+} = require('../selectors/canvas');
 const {isActionTypeQueued} = require('../simulation/actionQueue');
 const {render} = require('../render/render');
 
@@ -84,24 +86,21 @@ function Game(props: Props): React.Node {
   // ---------------------------------------------
   const {game} = state;
 
-  const elem = document.getElementById('background');
-  const dims = useMemo(() => {
-    const dims = {width: window.innerWidth, height: window.innerHeight};
-    if (isInLevelEditor && elem != null) {
-      const slider = document.getElementById('sliderBar');
-      const editor = document.getElementById('levelEditor');
-      let sliderWidth = slider != null ? slider.getBoundingClientRect().width : 0;
-      let editorWidth = editor != null ? editor.getBoundingClientRect().width : 0;
-      dims.width = dims.width - sliderWidth - editorWidth;
+  const [dims, setDims] = useState(getCanvasSize);
+  useEffect(() => {
+    function handleResize() {
+      setDims(getCanvasSize());
     }
-    return dims;
-  }, [window.innerWidth, window.innerHeight, elem != null]);
+    window.addEventListener('resize', handleResize);
+  }, [setDims]);
 
   return (
     <div
       className="background" id="background"
       style={{
         position: 'relative',
+        width: dims.width,
+        height: dims.height,
       }}
     >
       {
@@ -117,76 +116,71 @@ function Game(props: Props): React.Node {
         placeType={game.placeType}
         base={game.entities[game.BASE[0]]}
       />
-      <Canvas useFullScreen={state.screen != 'EDITOR'} />
+      <Canvas
+        useFullScreen={state.screen != 'EDITOR'}
+        width={dims.width}
+        height={dims.height}
+      />
       <Ticker ticker={game.ticker} />
       <MiniTicker miniTicker={game.miniTicker} />
     </div>
   );
 }
-      // <Canvas
-      //   dispatch={dispatch}
-      //   tickInterval={tickInterval}
-      //   innerWidth={dims.width}
-      //   innerHeight={dims.height}
-      //   isExperimental={state.screen == 'EDITOR'}
-      //   focusedEntity={game.focusedEntity}
-      // />
-
 
 function registerHotkeys(dispatch) {
 
-  dispatch({
-    type: 'SET_HOTKEY', press: 'onKeyDown',
-    key: 'up',
-    fn: (s) => {
-      const game = s.getState().game;
-      if (game.focusedEntity) return;
-      let moveAmount = Math.round(Math.max(1, game.gridHeight / 10));
-      dispatch({
-        type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: 0, y: moveAmount}),
-      });
-      render(game);
-    }
-  });
-  dispatch({
-    type: 'SET_HOTKEY', press: 'onKeyDown',
-    key: 'down',
-    fn: (s) => {
-      const game = s.getState().game;
-      if (game.focusedEntity) return;
-      let moveAmount = Math.round(Math.max(1, game.gridHeight / 10));
-      dispatch({
-        type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: 0, y: -1 * moveAmount}),
-      });
-      render(game);
-    }
-  });
-  dispatch({
-    type: 'SET_HOTKEY', press: 'onKeyDown',
-    key: 'left',
-    fn: (s) => {
-      const game = s.getState().game;
-      if (game.focusedEntity) return;
-      let moveAmount = Math.round(Math.max(1, game.gridWidth / 10));
-      dispatch({
-        type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: -1 * moveAmount, y: 0}),
-      });
-      render(game);
-    }
-  });
-  dispatch({
-    type: 'SET_HOTKEY', press: 'onKeyDown',
-    key: 'right',
-    fn: (s) => {
-      const game = s.getState().game;
-      if (game.focusedEntity) return;
-      let moveAmount = Math.round(Math.max(1, game.gridWidth / 10));
-      dispatch({
-        type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: moveAmount, y: 0}),
-      });
-      render(game);
-    }
-  });
+  // dispatch({
+  //   type: 'SET_HOTKEY', press: 'onKeyDown',
+  //   key: 'up',
+  //   fn: (s) => {
+  //     const game = s.getState().game;
+  //     if (game.focusedEntity) return;
+  //     let moveAmount = Math.round(Math.max(1, game.gridHeight / 10));
+  //     dispatch({
+  //       type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: 0, y: moveAmount}),
+  //     });
+  //     render(game);
+  //   }
+  // });
+  // dispatch({
+  //   type: 'SET_HOTKEY', press: 'onKeyDown',
+  //   key: 'down',
+  //   fn: (s) => {
+  //     const game = s.getState().game;
+  //     if (game.focusedEntity) return;
+  //     let moveAmount = Math.round(Math.max(1, game.gridHeight / 10));
+  //     dispatch({
+  //       type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: 0, y: -1 * moveAmount}),
+  //     });
+  //     render(game);
+  //   }
+  // });
+  // dispatch({
+  //   type: 'SET_HOTKEY', press: 'onKeyDown',
+  //   key: 'left',
+  //   fn: (s) => {
+  //     const game = s.getState().game;
+  //     if (game.focusedEntity) return;
+  //     let moveAmount = Math.round(Math.max(1, game.gridWidth / 10));
+  //     dispatch({
+  //       type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: -1 * moveAmount, y: 0}),
+  //     });
+  //     render(game);
+  //   }
+  // });
+  // dispatch({
+  //   type: 'SET_HOTKEY', press: 'onKeyDown',
+  //   key: 'right',
+  //   fn: (s) => {
+  //     const game = s.getState().game;
+  //     if (game.focusedEntity) return;
+  //     let moveAmount = Math.round(Math.max(1, game.gridWidth / 10));
+  //     dispatch({
+  //       type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: moveAmount, y: 0}),
+  //     });
+  //     render(game);
+  //   }
+  // });
 
   dispatch({
     type: 'SET_HOTKEY', press: 'onKeyDown',
