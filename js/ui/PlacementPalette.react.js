@@ -16,7 +16,7 @@ function PlacementPalette(props): React.Node {
   for (const entityType in Entities) {
     const config = Entities[entityType].config;
     if (config.cost == null) continue;
-    placeBuildingCards.push(
+    placeBuildingCards.unshift(
       <PlaceBuildingCard key={"placeEntityCard_" + entityType}
         dispatch={dispatch}
         game={game}

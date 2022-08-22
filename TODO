@@ -22,10 +22,8 @@
 
 
 - - - - - - POLISH - - - - - -
-  - ticker placement needs to be better/readable upgrade names
   - UI
     - nicer cards for buildings
-      - rename dirt to wall
     - get healthbar to render for turret and base and dirt and stone
       - maxHP
       - render healthbars for non-agents

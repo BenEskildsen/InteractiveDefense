@@ -824,7 +824,7 @@ var config = {
   COLLECTABLE: true,
   cost: 1,
   hp: 12,
-  // name: 'Dirt',
+  name: 'WALL',
 
   isExplosionImmune: true
 };
@@ -3407,12 +3407,13 @@ var doTick = function doTick(game) {
     };
   }
 
-  if (game.totalGameTime > 10000) {
+  if (game.totalGameTime > 10000 && !game.shownProjectileTicker) {
     game.ticker = {
       message: '^^ Select projectile type',
       time: 3000,
       max: 3000
     };
+    game.shownProjectileTicker = true;
   }
 
   // game/frame timing
@@ -11435,8 +11436,8 @@ function Ticker(props) {
     {
       style: {
         position: 'absolute',
-        top: 100,
-        left: 0,
+        top: 120,
+        left: 12,
         width: '100%',
         // opacity: shouldUseIndex ? index : 1,
         pointerEvents: 'none',
@@ -13242,7 +13243,7 @@ function PlacementPalette(props) {
   for (var entityType in Entities) {
     var config = Entities[entityType].config;
     if (config.cost == null) continue;
-    placeBuildingCards.push(React.createElement(PlaceBuildingCard, { key: "placeEntityCard_" + entityType,
+    placeBuildingCards.unshift(React.createElement(PlaceBuildingCard, { key: "placeEntityCard_" + entityType,
       dispatch: dispatch,
       game: game,
       entityType: entityType,

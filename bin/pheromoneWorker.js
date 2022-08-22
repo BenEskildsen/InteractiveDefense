@@ -824,7 +824,7 @@ var config = {
   COLLECTABLE: true,
   cost: 1,
   hp: 12,
-  // name: 'Dirt',
+  name: 'WALL',
 
   isExplosionImmune: true
 };
