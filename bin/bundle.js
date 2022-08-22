@@ -3407,6 +3407,14 @@ var doTick = function doTick(game) {
     };
   }
 
+  if (game.totalGameTime > 10000) {
+    game.ticker = {
+      message: '^^ Select projectile type',
+      time: 3000,
+      max: 3000
+    };
+  }
+
   // game/frame timing
   game.timeSinceLastTick = curTickTime - game.prevTickTime;
 
@@ -11261,58 +11269,58 @@ function Game(props) {
 
 function registerHotkeys(dispatch) {
 
-  dispatch({
-    type: 'SET_HOTKEY', press: 'onKeyDown',
-    key: 'up',
-    fn: function fn(s) {
-      var game = s.getState().game;
-      if (game.focusedEntity) return;
-      var moveAmount = Math.round(Math.max(1, game.gridHeight / 10));
-      dispatch({
-        type: 'SET_VIEW_POS', viewPos: add(game.viewPos, { x: 0, y: moveAmount })
-      });
-      render(game);
-    }
-  });
-  dispatch({
-    type: 'SET_HOTKEY', press: 'onKeyDown',
-    key: 'down',
-    fn: function fn(s) {
-      var game = s.getState().game;
-      if (game.focusedEntity) return;
-      var moveAmount = Math.round(Math.max(1, game.gridHeight / 10));
-      dispatch({
-        type: 'SET_VIEW_POS', viewPos: add(game.viewPos, { x: 0, y: -1 * moveAmount })
-      });
-      render(game);
-    }
-  });
-  dispatch({
-    type: 'SET_HOTKEY', press: 'onKeyDown',
-    key: 'left',
-    fn: function fn(s) {
-      var game = s.getState().game;
-      if (game.focusedEntity) return;
-      var moveAmount = Math.round(Math.max(1, game.gridWidth / 10));
-      dispatch({
-        type: 'SET_VIEW_POS', viewPos: add(game.viewPos, { x: -1 * moveAmount, y: 0 })
-      });
-      render(game);
-    }
-  });
-  dispatch({
-    type: 'SET_HOTKEY', press: 'onKeyDown',
-    key: 'right',
-    fn: function fn(s) {
-      var game = s.getState().game;
-      if (game.focusedEntity) return;
-      var moveAmount = Math.round(Math.max(1, game.gridWidth / 10));
-      dispatch({
-        type: 'SET_VIEW_POS', viewPos: add(game.viewPos, { x: moveAmount, y: 0 })
-      });
-      render(game);
-    }
-  });
+  // dispatch({
+  //   type: 'SET_HOTKEY', press: 'onKeyDown',
+  //   key: 'up',
+  //   fn: (s) => {
+  //     const game = s.getState().game;
+  //     if (game.focusedEntity) return;
+  //     let moveAmount = Math.round(Math.max(1, game.gridHeight / 10));
+  //     dispatch({
+  //       type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: 0, y: moveAmount}),
+  //     });
+  //     render(game);
+  //   }
+  // });
+  // dispatch({
+  //   type: 'SET_HOTKEY', press: 'onKeyDown',
+  //   key: 'down',
+  //   fn: (s) => {
+  //     const game = s.getState().game;
+  //     if (game.focusedEntity) return;
+  //     let moveAmount = Math.round(Math.max(1, game.gridHeight / 10));
+  //     dispatch({
+  //       type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: 0, y: -1 * moveAmount}),
+  //     });
+  //     render(game);
+  //   }
+  // });
+  // dispatch({
+  //   type: 'SET_HOTKEY', press: 'onKeyDown',
+  //   key: 'left',
+  //   fn: (s) => {
+  //     const game = s.getState().game;
+  //     if (game.focusedEntity) return;
+  //     let moveAmount = Math.round(Math.max(1, game.gridWidth / 10));
+  //     dispatch({
+  //       type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: -1 * moveAmount, y: 0}),
+  //     });
+  //     render(game);
+  //   }
+  // });
+  // dispatch({
+  //   type: 'SET_HOTKEY', press: 'onKeyDown',
+  //   key: 'right',
+  //   fn: (s) => {
+  //     const game = s.getState().game;
+  //     if (game.focusedEntity) return;
+  //     let moveAmount = Math.round(Math.max(1, game.gridWidth / 10));
+  //     dispatch({
+  //       type: 'SET_VIEW_POS', viewPos: add(game.viewPos, {x: moveAmount, y: 0}),
+  //     });
+  //     render(game);
+  //   }
+  // });
 
   dispatch({
     type: 'SET_HOTKEY', press: 'onKeyDown',

@@ -112,6 +112,14 @@ const doTick = (game: Game): Game => {
     };
   }
 
+  if (game.totalGameTime > 10000) {
+    game.ticker = {
+      message: '^^ Select projectile type',
+      time: 3000,
+      max: 3000,
+    };
+  }
+
   // game/frame timing
   game.timeSinceLastTick = curTickTime - game.prevTickTime;
 
