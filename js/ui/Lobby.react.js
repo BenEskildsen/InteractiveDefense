@@ -1,7 +1,7 @@
 // @flow
 
 const React = require('react');
-const axios = require('axios');
+// const axios = require('axios');
 const AudioWidget = require('./components/AudioWidget.react');
 const Button = require('./components/Button.react');
 const Checkbox = require('./components/Checkbox.react');
@@ -78,21 +78,7 @@ function Lobby(props: Props): React.Node {
             disabled: !isLoaded,
             onClick: () => {
               if (isLoaded) {
-                // const isUnique = !!!localStorage.getItem('revisit_' + level);
-                // axios
-                //   .post('/visit', {
-                //     hostname: window.location.hostname, path: '/game', map: level, isUnique,
-                //   })
-                //   .then(() => {
-                //     localStorage.setItem('revisit_' + level, true);
-                //   });
-                dispatch({type: 'DISMISS_MODAL'});
-                dispatch({type: 'SET_SCREEN', screen: 'GAME'});
-                dispatch({type: 'START_TICK'});
-                dispatch({type: 'SET_DIFFICULTY', difficulty});
-                if (difficulty == 'EASY') {
-                  dispatch({type: 'PAUSE_MISSILES', pauseMissiles: true});
-                }
+                playLevel(dispatch, isLoaded);
               }
             }
           }]}
@@ -101,7 +87,7 @@ function Lobby(props: Props): React.Node {
     }
     if (loading == 'Loading..') {
       setLoading('Loading...');
-      setTimeout(() => playLevel(store, level + 'Level', setLoadingProgress, setIsLoaded), 100);
+      setTimeout(() => loadLevelAsync(store, level + 'Level', setLoadingProgress, setIsLoaded), 100);
     }
   }, [loading, isLoaded, loadingProgress]);
 
@@ -306,7 +292,43 @@ function LevelEditor(props) {
   );
 }
 
-function playLevel(store, levelName: string, setLoadingProgress, setIsLoaded): void {
+// caller is responsible for making sure the level is actually loaded
+function playLevel(store) {
+  const dispatch = store.dispatch;
+  // const isUnique = !!!localStorage.getItem('revisit_' + level);
+  // axios
+  //   .post('/visit', {
+  //     hostname: window.location.hostname, path: '/game', map: level, isUnique,
+  //   })
+  //   .then(() => {
+  //     localStorage.setItem('revisit_' + level, true);
+  //   });
+  dispatch({type: 'DISMISS_MODAL'});
+  dispatch({type: 'SET_SCREEN', screen: 'GAME'});
+  dispatch({type: 'START_TICK'});
+
+  // dispatch({type: 'SET_SCREEN', screen: 'GAME'});
+
+  // if (!store.getState().runeInited) {
+  //   Rune.init({
+  //     resumeGame: () => dispatch({type: 'START_TICK'}),
+  //     pauseGame: () => dispatch({type: 'STOP_TICK'}),
+  //     restartGame: () => {
+  //       dispatch({type: 'STOP_TICK'});
+  //       dispatch({type: 'RETURN_TO_LOBBY'});
+  //     },
+  //     getScore: () => {
+  //       const game = store.getState().game;
+  //       if (game) return game.score;
+  //       return 0;
+  //     }
+  //   });
+  // } else {
+  //   dispatch({type: 'START_TICK'});
+  // }
+}
+
+function loadLevelAsync(store, levelName: string, setLoadingProgress, setIsLoaded): void {
   const dispatch = store.dispatch;
   const state = store.getState();
 
@@ -322,6 +344,7 @@ function playLevel(store, levelName: string, setLoadingProgress, setIsLoaded): v
     }
     if (
       progress < 100 ||
+      // check that all the sprites have been loaded
       Object.keys(state.sprites).length < Object.keys(globalConfig.config.imageFiles).length
     ) {
       setTimeout(checkLoading, 100);
@@ -330,9 +353,6 @@ function playLevel(store, levelName: string, setLoadingProgress, setIsLoaded): v
     }
   }
   setTimeout(checkLoading, 100);
-  // setIsLoaded(true);
-
-  // dispatch({type: 'START_TICK'});
 }
 
 module.exports = Lobby;

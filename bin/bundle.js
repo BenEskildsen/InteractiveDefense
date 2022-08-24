@@ -12748,7 +12748,7 @@ module.exports = LevelEditor;
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var React = require('react');
-var axios = require('axios');
+// const axios = require('axios');
 var AudioWidget = require('./components/AudioWidget.react');
 var Button = require('./components/Button.react');
 var Checkbox = require('./components/Checkbox.react');
@@ -12856,21 +12856,7 @@ function Lobby(props) {
             disabled: !isLoaded,
             onClick: function onClick() {
               if (isLoaded) {
-                // const isUnique = !!!localStorage.getItem('revisit_' + level);
-                // axios
-                //   .post('/visit', {
-                //     hostname: window.location.hostname, path: '/game', map: level, isUnique,
-                //   })
-                //   .then(() => {
-                //     localStorage.setItem('revisit_' + level, true);
-                //   });
-                dispatch({ type: 'DISMISS_MODAL' });
-                dispatch({ type: 'SET_SCREEN', screen: 'GAME' });
-                dispatch({ type: 'START_TICK' });
-                dispatch({ type: 'SET_DIFFICULTY', difficulty: difficulty });
-                if (difficulty == 'EASY') {
-                  dispatch({ type: 'PAUSE_MISSILES', pauseMissiles: true });
-                }
+                playLevel(dispatch, isLoaded);
               }
             }
           }]
@@ -12879,7 +12865,7 @@ function Lobby(props) {
     if (loading == 'Loading..') {
       setLoading('Loading...');
       setTimeout(function () {
-        return playLevel(store, level + 'Level', setLoadingProgress, setIsLoaded);
+        return loadLevelAsync(store, level + 'Level', setLoadingProgress, setIsLoaded);
       }, 100);
     }
   }, [loading, isLoaded, loadingProgress]);
@@ -13141,7 +13127,43 @@ function LevelEditor(props) {
   );
 }
 
-function playLevel(store, levelName, setLoadingProgress, setIsLoaded) {
+// caller is responsible for making sure the level is actually loaded
+function playLevel(store) {
+  var dispatch = store.dispatch;
+  // const isUnique = !!!localStorage.getItem('revisit_' + level);
+  // axios
+  //   .post('/visit', {
+  //     hostname: window.location.hostname, path: '/game', map: level, isUnique,
+  //   })
+  //   .then(() => {
+  //     localStorage.setItem('revisit_' + level, true);
+  //   });
+  dispatch({ type: 'DISMISS_MODAL' });
+  dispatch({ type: 'SET_SCREEN', screen: 'GAME' });
+  dispatch({ type: 'START_TICK' });
+
+  // dispatch({type: 'SET_SCREEN', screen: 'GAME'});
+
+  // if (!store.getState().runeInited) {
+  //   Rune.init({
+  //     resumeGame: () => dispatch({type: 'START_TICK'}),
+  //     pauseGame: () => dispatch({type: 'STOP_TICK'}),
+  //     restartGame: () => {
+  //       dispatch({type: 'STOP_TICK'});
+  //       dispatch({type: 'RETURN_TO_LOBBY'});
+  //     },
+  //     getScore: () => {
+  //       const game = store.getState().game;
+  //       if (game) return game.score;
+  //       return 0;
+  //     }
+  //   });
+  // } else {
+  //   dispatch({type: 'START_TICK'});
+  // }
+}
+
+function loadLevelAsync(store, levelName, setLoadingProgress, setIsLoaded) {
   var dispatch = store.dispatch;
   var state = store.getState();
 
@@ -13155,20 +13177,19 @@ function playLevel(store, levelName, setLoadingProgress, setIsLoaded) {
       progress = state.game.loadingProgress;
       setLoadingProgress(progress);
     }
-    if (progress < 100 || Object.keys(state.sprites).length < Object.keys(globalConfig.config.imageFiles).length) {
+    if (progress < 100 ||
+    // check that all the sprites have been loaded
+    Object.keys(state.sprites).length < Object.keys(globalConfig.config.imageFiles).length) {
       setTimeout(checkLoading, 100);
     } else {
       setIsLoaded(true);
     }
   };
   setTimeout(checkLoading, 100);
-  // setIsLoaded(true);
-
-  // dispatch({type: 'START_TICK'});
 }
 
 module.exports = Lobby;
-},{"../config":1,"../levels/levels":22,"../systems/spriteSheetSystem":66,"../thunks/levelThunks":67,"../ui/components/Modal.react":94,"../ui/components/QuitButton.react":96,"../utils/helpers":99,"./components/AudioWidget.react":88,"./components/Button.react":89,"./components/Checkbox.react":90,"./components/Divider.react":91,"./components/Dropdown.react":92,"axios":105,"react":163}],85:[function(require,module,exports){
+},{"../config":1,"../levels/levels":22,"../systems/spriteSheetSystem":66,"../thunks/levelThunks":67,"../ui/components/Modal.react":94,"../ui/components/QuitButton.react":96,"../utils/helpers":99,"./components/AudioWidget.react":88,"./components/Button.react":89,"./components/Checkbox.react":90,"./components/Divider.react":91,"./components/Dropdown.react":92,"react":163}],85:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
