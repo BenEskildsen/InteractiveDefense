@@ -88,21 +88,6 @@ const handleGameWon = (store, dispatch, state, reason): void => {
   const {game} = state;
   dispatch({type: 'STOP_TICK'});
 
-  // set screen size  to be zoomed out
-  // let ratio = game.viewHeight / game.viewWidth;
-  // let viewWidth = game.gridWidth;
-  // let viewHeight = viewWidth * ratio;
-  // dispatch({type: 'SET_VIEW_POS',
-  //   viewPos: {x: 0, y: 0}, viewWidth, viewHeight, rerender: true,
-  // });
-
-  const contButton = {
-    label: 'Continue',
-    onClick: () => {
-      dispatch({type: 'DISMISS_MODAL'});
-      dispatch({type: 'START_TICK'});
-    }
-  };
   const returnButton = {
     label: 'Back to Main Menu',
     onClick: () => {
@@ -118,7 +103,7 @@ const handleGameWon = (store, dispatch, state, reason): void => {
       render(store.getState().game); // HACK for level editor
     },
   };
-  const buttons = [contButton, returnButton];
+  const buttons = [returnButton];
   if (state.screen == 'EDITOR') {
     buttons.push(resetButton);
   }
