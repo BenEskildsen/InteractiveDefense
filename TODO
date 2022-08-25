@@ -24,11 +24,10 @@
 - - - - - - POLISH - - - - - -
   - UI
     - nicer cards for buildings
-    - get healthbar to render for turret and base and dirt and stone
+    - get healthbar to render for base
       - maxHP
       - render healthbars for non-agents
-      - render location
-  - Remove main menu
+      - render location/render width
   - Reset should pass through lobby again
   - favicon
   - rune integration + toggle for it

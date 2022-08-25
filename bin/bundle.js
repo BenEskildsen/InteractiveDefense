@@ -9436,21 +9436,6 @@ var handleGameWon = function handleGameWon(store, dispatch, state, reason) {
 
   dispatch({ type: 'STOP_TICK' });
 
-  // set screen size  to be zoomed out
-  // let ratio = game.viewHeight / game.viewWidth;
-  // let viewWidth = game.gridWidth;
-  // let viewHeight = viewWidth * ratio;
-  // dispatch({type: 'SET_VIEW_POS',
-  //   viewPos: {x: 0, y: 0}, viewWidth, viewHeight, rerender: true,
-  // });
-
-  var contButton = {
-    label: 'Continue',
-    onClick: function onClick() {
-      dispatch({ type: 'DISMISS_MODAL' });
-      dispatch({ type: 'START_TICK' });
-    }
-  };
   var returnButton = {
     label: 'Back to Main Menu',
     onClick: function onClick() {
@@ -9466,7 +9451,7 @@ var handleGameWon = function handleGameWon(store, dispatch, state, reason) {
       render(store.getState().game); // HACK for level editor
     }
   };
-  var buttons = [contButton, returnButton];
+  var buttons = [returnButton];
   if (state.screen == 'EDITOR') {
     buttons.push(resetButton);
   }
@@ -12784,7 +12769,7 @@ function Lobby(props) {
       level = _useState2[0],
       setLevel = _useState2[1];
 
-  var _useState3 = useState(''),
+  var _useState3 = useState('Loading..'),
       _useState4 = _slicedToArray(_useState3, 2),
       loading = _useState4[0],
       setLoading = _useState4[1];
@@ -12846,21 +12831,9 @@ function Lobby(props) {
       if (_state.game != null) {
         progress = _state.game.loadingProgress;
       }
-      var title = 'Monster Defense';
-      var body = "";
-      dispatch({ type: 'SET_MODAL', modal: React.createElement(Modal, {
-          title: title,
-          body: body,
-          buttons: [{
-            label: !isLoaded ? '(Loading... ' + progress.toFixed(1) + '%)' : 'Begin',
-            disabled: !isLoaded,
-            onClick: function onClick() {
-              if (isLoaded) {
-                playLevel(dispatch, isLoaded);
-              }
-            }
-          }]
-        }) });
+      if (isLoaded) {
+        playLevel(store);
+      }
     }
     if (loading == 'Loading..') {
       setLoading('Loading...');
@@ -13138,7 +13111,7 @@ function playLevel(store) {
   //   .then(() => {
   //     localStorage.setItem('revisit_' + level, true);
   //   });
-  dispatch({ type: 'DISMISS_MODAL' });
+  // dispatch({type: 'DISMISS_MODAL'});
   dispatch({ type: 'SET_SCREEN', screen: 'GAME' });
   dispatch({ type: 'START_TICK' });
 

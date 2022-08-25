@@ -28,7 +28,7 @@ function Lobby(props: Props): React.Node {
   const state = store.getState();
 
   const [level, setLevel] = useState('sparseWallDefense');
-  const [loading, setLoading] = useState('');
+  const [loading, setLoading] = useState('Loading..');
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [difficulty, setDifficulty] = useState('NORMAL');
@@ -67,23 +67,9 @@ function Lobby(props: Props): React.Node {
       if (state.game != null) {
         progress = state.game.loadingProgress;
       }
-      let title = 'Monster Defense'
-      const body = "";
-      dispatch({type: 'SET_MODAL', modal: (
-        <Modal
-          title={title}
-          body={body}
-          buttons={[{
-            label: !isLoaded ? `(Loading... ${progress.toFixed(1)}%)` : 'Begin',
-            disabled: !isLoaded,
-            onClick: () => {
-              if (isLoaded) {
-                playLevel(dispatch, isLoaded);
-              }
-            }
-          }]}
-        />
-      )});
+      if (isLoaded) {
+        playLevel(store);
+      }
     }
     if (loading == 'Loading..') {
       setLoading('Loading...');
@@ -303,7 +289,7 @@ function playLevel(store) {
   //   .then(() => {
   //     localStorage.setItem('revisit_' + level, true);
   //   });
-  dispatch({type: 'DISMISS_MODAL'});
+  // dispatch({type: 'DISMISS_MODAL'});
   dispatch({type: 'SET_SCREEN', screen: 'GAME'});
   dispatch({type: 'START_TICK'});
 
