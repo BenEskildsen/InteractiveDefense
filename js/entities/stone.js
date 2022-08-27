@@ -9,8 +9,9 @@ const config = {
   TILED: true,
   NOT_ANIMATED: true,
   COLLECTABLE: true,
-  hp: 50,
-  // cost: 10,
+  hp: 12,
+  name: 'WALL',
+  cost: 1,
 
   isExplosionImmune: true,
 };

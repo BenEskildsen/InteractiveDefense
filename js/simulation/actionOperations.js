@@ -182,11 +182,12 @@ const entityShoot = (game: Game, entity: Entity, payload) => {
         game, add({x: 0.5, y: 0.5}, position), entity.playerID,
       );
     }
+    case 'STONE':
     case 'DIRT': {
       const position = round(add(makeVector(theta, -1), entity.position));
       projectile = Entities.MISSILE.make(
         game, position, entity.playerID,
-        Entities.DIRT.make(game, position),
+        Entities[projectileType].make(game, position),
         theta + Math.PI,
         150,
         entity.targetID,

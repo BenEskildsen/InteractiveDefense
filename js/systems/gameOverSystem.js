@@ -2,6 +2,7 @@
 
 const React = require('react');
 const axios = require('axios');
+const {useRune} = require('../selectors/misc');
 const Divider = require('../ui/components/Divider.react');
 const Modal = require('../ui/components/Modal.react');
 const Button = require('../ui/components/Button.react');
@@ -48,6 +49,11 @@ const initGameOverSystem = (store) => {
 const handleGameLoss = (store, dispatch, state, reason): void => {
   const {game} = state;
   dispatch({type: 'STOP_TICK'});
+  const Rune = useRune();
+  if (Rune) {
+    Rune.gameOver();
+    return;
+  }
 
   const returnButton = {
     label: 'Back to Main Menu',

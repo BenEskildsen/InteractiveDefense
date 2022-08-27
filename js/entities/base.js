@@ -2,6 +2,7 @@
 
 const {makeEntity} = require('./makeEntity');
 const globalConfig = require('../config');
+const {renderHealthBar} = require('../render/renderHealthBar');
 
 const config = {
   hp: 500,
@@ -56,16 +57,15 @@ const make = (
   };
 };
 
-const render = (ctx, game, base): void => {
-  const img = game.sprites.BASE;
-  ctx.drawImage(img, base.position.x, base.position.y, base.width, base.height);
 
-
+const render = (ctx, game: Game, base): void => {
   const {position, width, height, theta} = base;
+  const img = game.sprites.BASE;
   ctx.save();
   ctx.translate(
     position.x, position.y,
   );
+  ctx.drawImage(img, 0, 0, base.width, base.height);
 
   // barrel of turret
   ctx.save();
@@ -77,6 +77,14 @@ const render = (ctx, game, base): void => {
   ctx.translate(-1 * turretWidth * 0.75, -turretHeight / 2);
   ctx.fillRect(0, 0, turretWidth, turretHeight);
   ctx.restore();
+
+  // healthbar
+  // do the rotation just to undo it in renderHP, since
+  // theta for base is just for the turret
+	ctx.translate(width / 2, height / 2);
+  ctx.rotate(theta);
+  ctx.translate(-width / 2, -height / 2);
+  renderHealthBar(ctx, base, base.maxHP);
 
   ctx.restore();
 };

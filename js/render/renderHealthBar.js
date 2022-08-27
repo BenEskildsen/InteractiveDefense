@@ -5,6 +5,7 @@ const {
 } = require('../utils/vectors');
 const {lookupInGrid} = require('../utils/gridHelpers');
 
+// assumes that we are already moved relative to entity position
 const renderHealthBar = (ctx, entity, maxHealth) => {
 
   const renderHP = Math.ceil(entity.hp);
@@ -16,7 +17,7 @@ const renderHealthBar = (ctx, entity, maxHealth) => {
   ctx.rotate(-entity.theta);
   ctx.translate(-entity.width / 2, -entity.height / 2);
 
-  const barWidth = 1.5;
+  const barWidth = entity.width + 0.5;
   const barHeight = 0.20;
   if (entity.prevHP >= renderHP + 1 && entity.prevHPAge < 6) {
     const redWidth = entity.prevHP / maxHealth * barWidth;

@@ -9,7 +9,7 @@ const config = {
   NOT_ANIMATED: true,
   TILED: true,
   COLLECTABLE: true,
-  cost: 1,
+  // cost: 1,
   hp: 12,
   name: 'WALL',
 

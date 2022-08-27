@@ -13,6 +13,7 @@ const levels = require('../levels/levels');
 const {loadLevel} = require('../thunks/levelThunks');
 const {initSpriteSheetSystem} = require('../systems/spriteSheetSystem');
 const {isMobile} = require('../utils/helpers');
+const {useRune} = require('../selectors/misc');
 const globalConfig = require('../config');
 const {useState, useEffect, useMemo} = React;
 
@@ -291,27 +292,26 @@ function playLevel(store) {
   //   });
   // dispatch({type: 'DISMISS_MODAL'});
   dispatch({type: 'SET_SCREEN', screen: 'GAME'});
-  dispatch({type: 'START_TICK'});
+  // dispatch({type: 'START_TICK'});
 
-  // dispatch({type: 'SET_SCREEN', screen: 'GAME'});
-
-  // if (!store.getState().runeInited) {
-  //   Rune.init({
-  //     resumeGame: () => dispatch({type: 'START_TICK'}),
-  //     pauseGame: () => dispatch({type: 'STOP_TICK'}),
-  //     restartGame: () => {
-  //       dispatch({type: 'STOP_TICK'});
-  //       dispatch({type: 'RETURN_TO_LOBBY'});
-  //     },
-  //     getScore: () => {
-  //       const game = store.getState().game;
-  //       if (game) return game.score;
-  //       return 0;
-  //     }
-  //   });
-  // } else {
-  //   dispatch({type: 'START_TICK'});
-  // }
+  const Rune = useRune();
+  if (Rune && !store.getState().runeInited) {
+    Rune.init({
+      resumeGame: () => dispatch({type: 'START_TICK'}),
+      pauseGame: () => dispatch({type: 'STOP_TICK'}),
+      restartGame: () => {
+        dispatch({type: 'STOP_TICK'});
+        dispatch({type: 'RETURN_TO_LOBBY'});
+      },
+      getScore: () => {
+        const game = store.getState().game;
+        if (game) return game.score;
+        return 0;
+      }
+    });
+  } else {
+    dispatch({type: 'START_TICK'});
+  }
 }
 
 function loadLevelAsync(store, levelName: string, setLoadingProgress, setIsLoaded): void {

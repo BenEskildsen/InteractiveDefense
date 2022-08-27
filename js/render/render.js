@@ -26,6 +26,8 @@ const {
 
 import type {Game, Entity, Hill, Ant, Food} from '../types';
 
+const BACKGROUND_ALPHA = 0.4;
+
 let cur = null;
 let prevTime = 0;
 let msAvg = 0;
@@ -276,7 +278,7 @@ const refreshStaleImage = (game, dims): void => {
     ctx.fillRect(
       0, 0, game.gridWidth, game.gridHeight,
     );
-    ctx.globalAlpha = 0.2;
+    ctx.globalAlpha = BACKGROUND_ALPHA;
     for (let y = 0; y < game.gridHeight; y++) {
       // ctx.globalAlpha += y / game.gridHeight / 100;
       for (let x = 0; x < game.gridWidth; x++) {
@@ -308,7 +310,7 @@ const refreshStaleImage = (game, dims): void => {
       ctx.fillRect(pos.x, pos.y, 1, 1);
       const obj = getTileSprite(game, {type: 'DIRT', dictIndexStr: 'lrtb'});
       if (obj != null && obj.img != null) {
-        ctx.globalAlpha = 0.2;
+        ctx.globalAlpha = BACKGROUND_ALPHA;
         ctx.drawImage(
           obj.img,
           obj.x, obj.y, obj.width, obj.height,

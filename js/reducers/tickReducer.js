@@ -437,10 +437,10 @@ const updateTowers = (game): void => {
         }
       }
 
-      if (projectileType == 'DIRT') {
+      if (projectileType == 'STONE') {
         unoccupied = lookupInGrid(game.grid, targetPos)
           .map(id => game.entities[id])
-          .filter(e => e.type == 'DIRT')
+          .filter(e => e.type == 'STONE')
           .length == 0;
       }
 
@@ -452,7 +452,7 @@ const updateTowers = (game): void => {
             // {theta: tower.theta, projectileType: tower.projectileType}
             {theta: tower.theta, projectileType, targetPos}
           );
-        if (projectileType == 'DIRT' && usedQueuedTarget) {
+        if (projectileType == 'STONE' && usedQueuedTarget) {
           action.duration /= 3;
         }
         if (projectileType == 'BULLET' && game.upgrades.FIRE_RATE) {

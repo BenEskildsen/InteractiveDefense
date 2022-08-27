@@ -4,6 +4,7 @@
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var config = {
+  useRune: false,
   msPerTick: 16,
 
   canvasWidth: 1000,
@@ -529,6 +530,9 @@ var _require = require('./makeEntity'),
 
 var globalConfig = require('../config');
 
+var _require2 = require('../render/renderHealthBar'),
+    renderHealthBar = _require2.renderHealthBar;
+
 var config = {
   hp: 500,
   maxHP: 500,
@@ -571,16 +575,15 @@ var make = function make(game, position, playerID, quantity) {
 };
 
 var render = function render(ctx, game, base) {
-  var img = game.sprites.BASE;
-  ctx.drawImage(img, base.position.x, base.position.y, base.width, base.height);
-
   var position = base.position,
       width = base.width,
       height = base.height,
       theta = base.theta;
 
+  var img = game.sprites.BASE;
   ctx.save();
   ctx.translate(position.x, position.y);
+  ctx.drawImage(img, 0, 0, base.width, base.height);
 
   // barrel of turret
   ctx.save();
@@ -593,11 +596,19 @@ var render = function render(ctx, game, base) {
   ctx.fillRect(0, 0, turretWidth, turretHeight);
   ctx.restore();
 
+  // healthbar
+  // do the rotation just to undo it in renderHP, since
+  // theta for base is just for the turret
+  ctx.translate(width / 2, height / 2);
+  ctx.rotate(theta);
+  ctx.translate(-width / 2, -height / 2);
+  renderHealthBar(ctx, base, base.maxHP);
+
   ctx.restore();
 };
 
 module.exports = { config: config, make: make, render: render };
-},{"../config":1,"./makeEntity":11}],5:[function(require,module,exports){
+},{"../config":1,"../render/renderHealthBar":24,"./makeEntity":11}],5:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -822,7 +833,7 @@ var config = {
   NOT_ANIMATED: true,
   TILED: true,
   COLLECTABLE: true,
-  cost: 1,
+  // cost: 1,
   hp: 12,
   name: 'WALL',
 
@@ -1601,8 +1612,9 @@ var config = {
   TILED: true,
   NOT_ANIMATED: true,
   COLLECTABLE: true,
-  hp: 50,
-  // cost: 10,
+  hp: 12,
+  name: 'WALL',
+  cost: 1,
 
   isExplosionImmune: true
 };
@@ -2944,6 +2956,9 @@ var _require = require('../utils/vectors'),
 var _require2 = require('../utils/gridHelpers'),
     lookupInGrid = _require2.lookupInGrid;
 
+// assumes that we are already moved relative to entity position
+
+
 var renderHealthBar = function renderHealthBar(ctx, entity, maxHealth) {
 
   var renderHP = Math.ceil(entity.hp);
@@ -2955,7 +2970,7 @@ var renderHealthBar = function renderHealthBar(ctx, entity, maxHealth) {
   ctx.rotate(-entity.theta);
   ctx.translate(-entity.width / 2, -entity.height / 2);
 
-  var barWidth = 1.5;
+  var barWidth = entity.width + 0.5;
   var barHeight = 0.20;
   if (entity.prevHP >= renderHP + 1 && entity.prevHPAge < 6) {
     var redWidth = entity.prevHP / maxHealth * barWidth;
@@ -3109,8 +3124,11 @@ var _require5 = require('../utils/vectors'),
     ceil = _require5.ceil,
     containsVector = _require5.containsVector;
 
-var _require6 = require('../simulation/actionQueue'),
-    makeAction = _require6.makeAction;
+var _require6 = require('../config'),
+    config = _require6.config;
+
+var _require7 = require('../simulation/actionQueue'),
+    makeAction = _require7.makeAction;
 
 var onScreen = function onScreen(game, entity) {
   var viewPos = game.viewPos,
@@ -3320,6 +3338,13 @@ var getManningAction = function getManningAction(game) {
   return { entity: entity, entityAction: entityAction };
 };
 
+var useRune = function useRune() {
+  if (typeof Rune == 'undefined' || !config.useRune) {
+    return false;
+  }
+  return Rune;
+};
+
 module.exports = {
   onScreen: onScreen,
   getPositionsInFront: getPositionsInFront,
@@ -3327,9 +3352,10 @@ module.exports = {
   isFacing: isFacing,
   canDoMove: canDoMove,
   getControlledEntityInteraction: getControlledEntityInteraction,
-  getManningAction: getManningAction
+  getManningAction: getManningAction,
+  useRune: useRune
 };
-},{"../selectors/collisions":26,"../selectors/neighbors":28,"../simulation/actionQueue":31,"../utils/gridHelpers":34,"../utils/helpers":35,"../utils/vectors":37}],28:[function(require,module,exports){
+},{"../config":1,"../selectors/collisions":26,"../selectors/neighbors":28,"../simulation/actionQueue":31,"../utils/gridHelpers":34,"../utils/helpers":35,"../utils/vectors":37}],28:[function(require,module,exports){
 'use strict';
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }

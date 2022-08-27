@@ -218,9 +218,9 @@ function configureMouseHandlers(game) {
         const prevPos = game.prevInteractPos.pos;
         let pos = prevPos;
         dispatch({type: 'SET', property: 'crosshairPos', value: gridPos});
-        if (game.placeType == 'DIRT') {
+        if (game.placeType == 'STONE') {
           dispatch({type: 'ENQUEUE_TARGET', entity: tower,
-            position: gridPos, projectileType: 'DIRT',
+            position: gridPos, projectileType: 'STONE',
           });
         }
         while (!equals(pos, gridPos)) {
@@ -230,9 +230,9 @@ function configureMouseHandlers(game) {
             y: diff.y == 0 ? pos.y : pos.y - diff.y / Math.abs(diff.y),
           };
           dispatch({type: 'SET', property: 'crosshairPos', value: gridPos});
-          if (game.placeType == 'DIRT') {
+          if (game.placeType == 'STONE') {
             dispatch({type: 'ENQUEUE_TARGET', entity: tower,
-              position: gridPos, projectileType: 'DIRT',
+              position: gridPos, projectileType: 'STONE',
             });
           }
         }
@@ -242,9 +242,9 @@ function configureMouseHandlers(game) {
         });
       } else {
         dispatch({type: 'SET', property: 'crosshairPos', value: gridPos});
-        if (game.placeType == 'DIRT') {
+        if (game.placeType == 'STONE') {
           dispatch({type: 'ENQUEUE_TARGET', entity: tower,
-            position: gridPos, projectileType: 'DIRT',
+            position: gridPos, projectileType: 'STONE',
           });
         }
         dispatch({type: 'SET',

@@ -1,4 +1,13 @@
 
+- - - - - - - TODO - - - - - - - -
+  - screenshot for cover image
+  - favicon
+  - itch
+    - better screenshot
+    - description
+    - zip
+
+
 - - - - - - - FIX - - - - - - - -
 
 
@@ -22,15 +31,6 @@
 
 
 - - - - - - POLISH - - - - - -
-  - UI
-    - nicer cards for buildings
-    - get healthbar to render for base
-      - maxHP
-      - render healthbars for non-agents
-      - render location/render width
-  - Reset should pass through lobby again
-  - favicon
-  - rune integration + toggle for it
 
 
 - - - - - - STRETCH - - - - - -
