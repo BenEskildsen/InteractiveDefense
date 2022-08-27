@@ -78,99 +78,100 @@ function Lobby(props: Props): React.Node {
     }
   }, [loading, isLoaded, loadingProgress]);
 
-  return (
-    <span>
-      <QuitButton isInGame={false} dispatch={dispatch} />
-      <div
-        style={{
-          margin: 'auto',
-          maxWidth: 700,
-          padding: 8,
-          textAlign: 'center',
-          fontFamily: '"Courier New", sans-serif',
-        }}
-      >
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            display: 'inline',
-            zIndex: -1,
-            opacity: 0.3,
-          }}
-        >
-          <img
-            width={width}
-            height={height}
-            src={'img/perimeterBackground1.gif'}
-          />
-        </div>
-        <h1>perimeter</h1>
-        <h3>~Beta~</h3>
-        <h2 style={{fontSize: '4em', marginBottom: 0}}>Play:</h2>
-        <Button
-          style={{
-            width: '100%',
-            height: 50,
-            fontSize: '2em',
-            borderRadius: '8px',
-            cursor: 'pointer',
-          }}
-          disabled={loading != '' || isLoaded}
-          label="Easy"
-          onClick={() => {
-            setDifficulty('EASY');
-            setLoading("Loading..");
-          }}
-        />
-        <div style={{marginBottom: 12}}>
-          Missiles don't start coming at you until you're ready
-        </div>
-        <Button
-          style={{
-            width: '100%',
-            height: 50,
-            fontSize: '2em',
-            borderRadius: '8px',
-            cursor: 'pointer',
-          }}
-          disabled={loading != '' || isLoaded}
-          label="Normal"
-          onClick={() => {
-            setDifficulty('NORMAL');
-            setLoading("Loading..");
-          }}
-        />
-        <div style={{marginBottom: 12}}>
-          Missiles come at you in waves of increasing difficulty
-        </div>
-        <Button
-          style={{
-            width: '100%',
-            height: 50,
-            fontSize: '2em',
-            borderRadius: '8px',
-            cursor: 'pointer',
-          }}
-          disabled={loading != '' || isLoaded}
-          label="Hard"
-          onClick={() => {
-            setDifficulty('HARD');
-            setLoading("Loading..");
-          }}
-        />
-        <div style={{marginBottom: 12}}>
-          Missiles come at you relentlessly from the start
-        </div>
-        <h3>{loading}</h3>
-      </div>
-      <LevelEditor dispatch={dispatch} />
-      <MadeBy />
-    </span>
-  );
+  return null;
+  // return (
+  //   <span>
+  //     <QuitButton isInGame={false} dispatch={dispatch} />
+  //     <div
+  //       style={{
+  //         margin: 'auto',
+  //         maxWidth: 700,
+  //         padding: 8,
+  //         textAlign: 'center',
+  //         fontFamily: '"Courier New", sans-serif',
+  //       }}
+  //     >
+  //       <div
+  //         style={{
+  //           width: '100%',
+  //           height: '100%',
+  //           position: 'absolute',
+  //           top: 0,
+  //           left: 0,
+  //           display: 'inline',
+  //           zIndex: -1,
+  //           opacity: 0.3,
+  //         }}
+  //       >
+  //         <img
+  //           width={width}
+  //           height={height}
+  //           src={'img/perimeterBackground1.gif'}
+  //         />
+  //       </div>
+  //       <h1>perimeter</h1>
+  //       <h3>~Beta~</h3>
+  //       <h2 style={{fontSize: '4em', marginBottom: 0}}>Play:</h2>
+  //       <Button
+  //         style={{
+  //           width: '100%',
+  //           height: 50,
+  //           fontSize: '2em',
+  //           borderRadius: '8px',
+  //           cursor: 'pointer',
+  //         }}
+  //         disabled={loading != '' || isLoaded}
+  //         label="Easy"
+  //         onClick={() => {
+  //           setDifficulty('EASY');
+  //           setLoading("Loading..");
+  //         }}
+  //       />
+  //       <div style={{marginBottom: 12}}>
+  //         Missiles don't start coming at you until you're ready
+  //       </div>
+  //       <Button
+  //         style={{
+  //           width: '100%',
+  //           height: 50,
+  //           fontSize: '2em',
+  //           borderRadius: '8px',
+  //           cursor: 'pointer',
+  //         }}
+  //         disabled={loading != '' || isLoaded}
+  //         label="Normal"
+  //         onClick={() => {
+  //           setDifficulty('NORMAL');
+  //           setLoading("Loading..");
+  //         }}
+  //       />
+  //       <div style={{marginBottom: 12}}>
+  //         Missiles come at you in waves of increasing difficulty
+  //       </div>
+  //       <Button
+  //         style={{
+  //           width: '100%',
+  //           height: 50,
+  //           fontSize: '2em',
+  //           borderRadius: '8px',
+  //           cursor: 'pointer',
+  //         }}
+  //         disabled={loading != '' || isLoaded}
+  //         label="Hard"
+  //         onClick={() => {
+  //           setDifficulty('HARD');
+  //           setLoading("Loading..");
+  //         }}
+  //       />
+  //       <div style={{marginBottom: 12}}>
+  //         Missiles come at you relentlessly from the start
+  //       </div>
+  //       <h3>{loading}</h3>
+  //     </div>
+  //     <LevelEditor dispatch={dispatch} />
+  //     <MadeBy />
+  //   </span>
+  // );
 }
 
 function MadeBy(props) {

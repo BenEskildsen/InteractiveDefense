@@ -219,8 +219,9 @@ const entityDie = (game: Game, entity: Entity): void => {
       game.upgrades[entity.upgradeType] = 0;
     }
     game.upgrades[entity.upgradeType] += 1;
+    const upgradeName = Entities.UPGRADE.config.upgradeNames[entity.upgradeType];
     game.ticker = {
-      message: 'Upgraded ' + entity.upgradeType,
+      message: 'Upgraded ' + upgradeName,
       time: 3000,
       max: 3000,
     };

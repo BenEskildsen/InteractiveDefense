@@ -1809,6 +1809,14 @@ var config = {
   upgradeTypes: ['FIRE_RATE', 'TURN_RATE', // 'TRIPLE_SHOT',
   'DAMAGE', 'MONEY', 'MISSILE_EXPLOSION'],
 
+  upgradeNames: {
+    'FIRE_RATE': 'FIRE RATE',
+    'TURN_RATE': 'TURN RATE',
+    'DAMAGE': 'DAMAGE',
+    'MONEY': 'MONEY',
+    'MISSILE_EXPLOSION': 'EXPLOSIONS'
+  },
+
   blockingTypes: ['FOOD', 'DIRT', 'AGENT', 'TURRET', 'MONSTER', 'FARM', 'SPLASH_TURRET', 'STEEL', 'BASE'],
 
   MOVE: {
@@ -7183,8 +7191,9 @@ var entityDie = function entityDie(game, entity) {
       game.upgrades[entity.upgradeType] = 0;
     }
     game.upgrades[entity.upgradeType] += 1;
+    var upgradeName = Entities.UPGRADE.config.upgradeNames[entity.upgradeType];
     game.ticker = {
-      message: 'Upgraded ' + entity.upgradeType,
+      message: 'Upgraded ' + upgradeName,
       time: 3000,
       max: 3000
     };
@@ -12885,125 +12894,100 @@ function Lobby(props) {
     }
   }, [loading, isLoaded, loadingProgress]);
 
-  return React.createElement(
-    'span',
-    null,
-    React.createElement(QuitButton, { isInGame: false, dispatch: dispatch }),
-    React.createElement(
-      'div',
-      {
-        style: {
-          margin: 'auto',
-          maxWidth: 700,
-          padding: 8,
-          textAlign: 'center',
-          fontFamily: '"Courier New", sans-serif'
-        }
-      },
-      React.createElement(
-        'div',
-        {
-          style: {
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            display: 'inline',
-            zIndex: -1,
-            opacity: 0.3
-          }
-        },
-        React.createElement('img', {
-          width: width,
-          height: height,
-          src: 'img/perimeterBackground1.gif'
-        })
-      ),
-      React.createElement(
-        'h1',
-        null,
-        'perimeter'
-      ),
-      React.createElement(
-        'h3',
-        null,
-        '~Beta~'
-      ),
-      React.createElement(
-        'h2',
-        { style: { fontSize: '4em', marginBottom: 0 } },
-        'Play:'
-      ),
-      React.createElement(Button, {
-        style: {
-          width: '100%',
-          height: 50,
-          fontSize: '2em',
-          borderRadius: '8px',
-          cursor: 'pointer'
-        },
-        disabled: loading != '' || isLoaded,
-        label: 'Easy',
-        onClick: function onClick() {
-          setDifficulty('EASY');
-          setLoading("Loading..");
-        }
-      }),
-      React.createElement(
-        'div',
-        { style: { marginBottom: 12 } },
-        'Missiles don\'t start coming at you until you\'re ready'
-      ),
-      React.createElement(Button, {
-        style: {
-          width: '100%',
-          height: 50,
-          fontSize: '2em',
-          borderRadius: '8px',
-          cursor: 'pointer'
-        },
-        disabled: loading != '' || isLoaded,
-        label: 'Normal',
-        onClick: function onClick() {
-          setDifficulty('NORMAL');
-          setLoading("Loading..");
-        }
-      }),
-      React.createElement(
-        'div',
-        { style: { marginBottom: 12 } },
-        'Missiles come at you in waves of increasing difficulty'
-      ),
-      React.createElement(Button, {
-        style: {
-          width: '100%',
-          height: 50,
-          fontSize: '2em',
-          borderRadius: '8px',
-          cursor: 'pointer'
-        },
-        disabled: loading != '' || isLoaded,
-        label: 'Hard',
-        onClick: function onClick() {
-          setDifficulty('HARD');
-          setLoading("Loading..");
-        }
-      }),
-      React.createElement(
-        'div',
-        { style: { marginBottom: 12 } },
-        'Missiles come at you relentlessly from the start'
-      ),
-      React.createElement(
-        'h3',
-        null,
-        loading
-      )
-    ),
-    React.createElement(LevelEditor, { dispatch: dispatch }),
-    React.createElement(MadeBy, null)
-  );
+  return null;
+  // return (
+  //   <span>
+  //     <QuitButton isInGame={false} dispatch={dispatch} />
+  //     <div
+  //       style={{
+  //         margin: 'auto',
+  //         maxWidth: 700,
+  //         padding: 8,
+  //         textAlign: 'center',
+  //         fontFamily: '"Courier New", sans-serif',
+  //       }}
+  //     >
+  //       <div
+  //         style={{
+  //           width: '100%',
+  //           height: '100%',
+  //           position: 'absolute',
+  //           top: 0,
+  //           left: 0,
+  //           display: 'inline',
+  //           zIndex: -1,
+  //           opacity: 0.3,
+  //         }}
+  //       >
+  //         <img
+  //           width={width}
+  //           height={height}
+  //           src={'img/perimeterBackground1.gif'}
+  //         />
+  //       </div>
+  //       <h1>perimeter</h1>
+  //       <h3>~Beta~</h3>
+  //       <h2 style={{fontSize: '4em', marginBottom: 0}}>Play:</h2>
+  //       <Button
+  //         style={{
+  //           width: '100%',
+  //           height: 50,
+  //           fontSize: '2em',
+  //           borderRadius: '8px',
+  //           cursor: 'pointer',
+  //         }}
+  //         disabled={loading != '' || isLoaded}
+  //         label="Easy"
+  //         onClick={() => {
+  //           setDifficulty('EASY');
+  //           setLoading("Loading..");
+  //         }}
+  //       />
+  //       <div style={{marginBottom: 12}}>
+  //         Missiles don't start coming at you until you're ready
+  //       </div>
+  //       <Button
+  //         style={{
+  //           width: '100%',
+  //           height: 50,
+  //           fontSize: '2em',
+  //           borderRadius: '8px',
+  //           cursor: 'pointer',
+  //         }}
+  //         disabled={loading != '' || isLoaded}
+  //         label="Normal"
+  //         onClick={() => {
+  //           setDifficulty('NORMAL');
+  //           setLoading("Loading..");
+  //         }}
+  //       />
+  //       <div style={{marginBottom: 12}}>
+  //         Missiles come at you in waves of increasing difficulty
+  //       </div>
+  //       <Button
+  //         style={{
+  //           width: '100%',
+  //           height: 50,
+  //           fontSize: '2em',
+  //           borderRadius: '8px',
+  //           cursor: 'pointer',
+  //         }}
+  //         disabled={loading != '' || isLoaded}
+  //         label="Hard"
+  //         onClick={() => {
+  //           setDifficulty('HARD');
+  //           setLoading("Loading..");
+  //         }}
+  //       />
+  //       <div style={{marginBottom: 12}}>
+  //         Missiles come at you relentlessly from the start
+  //       </div>
+  //       <h3>{loading}</h3>
+  //     </div>
+  //     <LevelEditor dispatch={dispatch} />
+  //     <MadeBy />
+  //   </span>
+  // );
 }
 
 function MadeBy(props) {

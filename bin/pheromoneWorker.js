@@ -1809,6 +1809,14 @@ var config = {
   upgradeTypes: ['FIRE_RATE', 'TURN_RATE', // 'TRIPLE_SHOT',
   'DAMAGE', 'MONEY', 'MISSILE_EXPLOSION'],
 
+  upgradeNames: {
+    'FIRE_RATE': 'FIRE RATE',
+    'TURN_RATE': 'TURN RATE',
+    'DAMAGE': 'DAMAGE',
+    'MONEY': 'MONEY',
+    'MISSILE_EXPLOSION': 'EXPLOSIONS'
+  },
+
   blockingTypes: ['FOOD', 'DIRT', 'AGENT', 'TURRET', 'MONSTER', 'FARM', 'SPLASH_TURRET', 'STEEL', 'BASE'],
 
   MOVE: {

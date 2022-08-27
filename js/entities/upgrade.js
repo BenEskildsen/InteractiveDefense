@@ -22,6 +22,14 @@ const config = {
     'MISSILE_EXPLOSION',
   ],
 
+  upgradeNames: {
+    'FIRE_RATE': 'FIRE RATE',
+    'TURN_RATE': 'TURN RATE',
+    'DAMAGE': 'DAMAGE',
+    'MONEY': 'MONEY',
+    'MISSILE_EXPLOSION': 'EXPLOSIONS',
+  },
+
   blockingTypes: [
     'FOOD', 'DIRT', 'AGENT',
     'TURRET', 'MONSTER', 'FARM',
